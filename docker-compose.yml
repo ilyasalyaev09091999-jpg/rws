@@ -1,0 +1,49 @@
+services:
+  redis:
+    image: redis:7.0
+    container_name: redis-route
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  geography-postgres:
+    build: .
+    image: postgres:16
+    container_name: geography-postgres
+    environment:
+      POSTGRES_USER: geography
+      POSTGRES_PASSWORD: geography
+      POSTGRES_DB: geography
+    volumes:
+      - ./infrastructure/databases/geography:/docker-entrypoint-initdb.d:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U geography -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  refdata-postgres:
+    image: postgres:16
+    container_name: refdata-postgres
+    environment:
+      POSTGRES_USER: refdata
+      POSTGRES_PASSWORD: refdata
+      POSTGRES_DB: refdata
+    volumes:
+      - ./infrastructure/databases/refdata:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U refdata -p 5433" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  redis_data:
+  pgdata:
