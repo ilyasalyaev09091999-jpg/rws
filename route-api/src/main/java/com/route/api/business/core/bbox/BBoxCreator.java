@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 public class BBoxCreator {
 
     public double[] findBBox(double startLat, double startLon, double endLat, double endLon) {
-        double buffer = 2;
+        double buffer = 3;
 
         double minLon = Math.min(startLon, endLon) - buffer;
         double minLat = Math.min(startLat, endLat) - buffer;

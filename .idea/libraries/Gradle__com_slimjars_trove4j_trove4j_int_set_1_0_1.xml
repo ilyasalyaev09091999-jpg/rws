@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: com.slimjars.trove4j:trove4j-int-set:1.0.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.slimjars.trove4j" artifactId="trove4j-int-set" version="1.0.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.slimjars.trove4j/trove4j-int-set/1.0.1/916353fee49a7346fdbf1ffaac45801f75fdea09/trove4j-int-set-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

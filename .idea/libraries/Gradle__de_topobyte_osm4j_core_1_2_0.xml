@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: de.topobyte:osm4j-core:1.2.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="de.topobyte" artifactId="osm4j-core" version="1.2.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.topobyte/osm4j-core/1.2.0/8e343c4b42a89d8dc996054e98b80baddb1ee7e2/osm4j-core-1.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

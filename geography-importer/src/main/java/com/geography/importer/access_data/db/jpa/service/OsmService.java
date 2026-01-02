@@ -29,7 +29,7 @@ public class OsmService {
     }
 
 
-    @Transactional
+
     public void saveWaysBatch(List<WayEntity> ways) {
         // 1. Собираем все ноды, на которые ссылаются пути
         Set<NodeEntity> allNodes = new HashSet<>();

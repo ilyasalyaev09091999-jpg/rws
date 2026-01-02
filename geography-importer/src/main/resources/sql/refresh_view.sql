@@ -1,1 +1,0 @@
-REFRESH MATERIALIZED VIEW edges_astar;

@@ -15,6 +15,8 @@ import de.topobyte.osm4j.core.model.util.OsmModelUtil;
 import de.topobyte.osm4j.pbf.seq.PbfIterator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -30,6 +32,7 @@ public class OsmImportService {
 
     private final OsmService osmService;
 
+    @Transactional
     public void importWaterways() throws IOException {
         Path osmFile = null;
         try (Stream<Path> stream = Files.list(Paths.get("geography-importer/src/main/resources"))) {
@@ -47,10 +50,6 @@ public class OsmImportService {
         }
 
         System.out.println("file " + osmFile.getFileName());
-
-
-        // Очищаем базу
-        osmService.clearDatabase();
 
 
         Set<Long> neededNodeIds = new HashSet<>();
@@ -96,6 +95,7 @@ public class OsmImportService {
         int BATCH_SIZE = 500;
         List<WayEntity> batch = new ArrayList<>(BATCH_SIZE);
 
+        int nodesImported = 0;
         try (InputStream input = Files.newInputStream(osmFile)) {
             OsmIterator iterator = new PbfIterator(input, false);
 
@@ -115,6 +115,7 @@ public class OsmImportService {
                 List<WayNodeEntity> wnList = wayEntity.getNodes();
 
                 for (int i = 0; i < way.getNumberOfNodes(); i++) {
+                    nodesImported++;
                     long nodeId = way.getNodeId(i);
                     NodeEntity node = nodeEntities.get(nodeId);
                     if (node == null) {
@@ -137,6 +138,8 @@ public class OsmImportService {
                     osmService.saveWaysBatch(batch);
                     batch.clear();
                 }
+
+                System.out.println("Imported = " + nodesImported);
             }
 
             if (!batch.isEmpty()) {
