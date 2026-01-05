@@ -24,7 +24,10 @@ public class PgRoutingRepository {
     }
 
 
-    @Cacheable(value = "routes", key = "#sourceNode + '-' + #targetNode + '-' + #bBox.hashCode()")
+    @Cacheable(
+            value = "routes",
+            key = "#sourceNode + '-' + #targetNode + '-' + T(java.util.Arrays).hashCode(#bBox)"
+    )
     public List<RouteNode> findRoute(Long sourceNode, Long targetNode, double[] bBox) {
         // bBox: [minLat, minLon, maxLat, maxLon]
         double minLat = bBox[0];

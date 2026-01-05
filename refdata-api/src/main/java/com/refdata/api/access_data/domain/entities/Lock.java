@@ -1,5 +1,6 @@
 package com.refdata.api.access_data.domain.entities;
 
+import jakarta.persistence.Column;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,5 +33,11 @@ public class Lock {
      * Долгота
      */
     private double longitude;
+
+    /**
+     * Привязка к node_id из таблицы nodes
+     *
+     */
+    private long nodeId;
 
 }

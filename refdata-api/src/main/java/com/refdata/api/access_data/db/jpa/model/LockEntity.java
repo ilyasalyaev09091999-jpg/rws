@@ -34,4 +34,6 @@ public class LockEntity {
      */
     private double longitude;
 
+    @Column(name = "node_id")
+    private long nodeId;
 }

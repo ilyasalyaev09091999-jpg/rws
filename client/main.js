@@ -69,11 +69,21 @@ document.getElementById('routeForm').addEventListener('submit', async (e) => {
         routeLine = L.polyline(latlngs, { color: 'blue', weight: 4 }).addTo(map);
         map.fitBounds(routeLine.getBounds());
 
+        const locksHtml = data.routeLocks && data.routeLocks.length
+            ? `
+                <p><b>Шлюзы на маршруте:</b></p>
+                <ul>
+                    ${data.routeLocks.map(lock => `<li>${lock.name}</li>`).join('')}
+                </ul>
+              `
+            : `<p><b>Шлюзы на маршруте:</b> отсутствуют</p>`;
+
         // Отображаем результат
         routeResult.innerHTML = `
             <p>Время в пути: ${data.duration}</p>
             <p>Время прибытия: ${new Date(data.arrivalDateTime).toLocaleString()}</p>
             <p>Общее расстояние: ${data.totalDistance.toFixed(2)} км</p>
+            ${locksHtml}
         `;
     } catch (err) {
         console.error(err);
@@ -256,36 +266,76 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// Универсальная функция загрузки и отрисовки точек
+async function loadAndDrawPoints({
+    url,
+    layer,
+    style,
+    popupBuilder
+}) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Ошибка запроса: ${url}`);
+        }
+
+        const items = await response.json();
+
+        items.forEach(item => {
+            L.circleMarker([item.latitude, item.longitude], style)
+                .addTo(layer)
+                .bindPopup(popupBuilder(item));
+        });
+
+    } catch (err) {
+        console.error(`Не удалось загрузить данные с ${url}`, err);
+    }
+}
+
+// Отрисовка шлюзов
+const markersLayerLock = L.layerGroup().addTo(map);
+
+// Загрузка шлюзов
+loadAndDrawPoints({
+    url: 'http://localhost:8092/api/locks/get',
+    layer: markersLayerLock,
+    style: {
+        radius: 6,
+        color: '#ff8c00',
+        fillColor: '#ff8c00',
+        fillOpacity: 0.9
+    },
+    popupBuilder: (lock) => `
+        <b>${lock.name}</b><br>
+    `
+});
+
 // Массив выбранных портов
 let selectedPorts = { A: null, B: null };
 let selectedMarkers = { A: null, B: null }; // храним маркеры выбранных портов
 let markersLayerPort = L.layerGroup().addTo(map);
 
 // Загрузка портов с сервера
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const response = await fetch('http://localhost:8092/api/ports/get');
-        if (!response.ok) throw new Error('Ошибка запроса портов');
-        const ports = await response.json();
+document.addEventListener('DOMContentLoaded', () => {
 
-        ports.forEach(port => {
-            L.circleMarker([port.latitude, port.longitude], {
-                radius: 8,
-                color: '#1e90ff',
-                fillColor: '#1e90ff',
-                fillOpacity: 0.8
-            })
-            .addTo(markersLayerPort)
-            .bindPopup(`
-                <b>${port.name}</b><br>ID: ${port.id}<br>
-                <button onclick="selectPort('${port.id}', ${port.latitude}, ${port.longitude})">
-                    Выбрать порт
-                </button>
-            `);
-        });
-    } catch (err) {
-        console.error('Не удалось загрузить порты', err);
-    }
+    loadAndDrawPoints({
+        url: 'http://localhost:8092/api/ports/get',
+        layer: markersLayerPort,
+        style: {
+            radius: 8,
+            color: '#1e90ff',
+            fillColor: '#1e90ff',
+            fillOpacity: 0.8
+        },
+        popupBuilder: (port) => `
+            <b>${port.name}</b><br>
+            ID: ${port.id}<br>
+            <button onclick="selectPort('${port.id}', ${port.latitude}, ${port.longitude})">
+                Выбрать порт
+            </button>
+        `
+    });
+
 });
 
 // Функция выбора порта из popup
