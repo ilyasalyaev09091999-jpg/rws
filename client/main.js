@@ -1,20 +1,25 @@
 // Инициализация карты
 const map = L.map('map').setView([55.0, 45.0], 5);
 
-// Базовый тайл (OpenStreetMap)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+// Базовый слой OSM
+const osmBase = L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap contributors'
+  }
+).addTo(map);
 
-// Навигационный (seamark) слой поверх — опционально
-L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
-  attribution: 'Map data © OpenSeaMap contributors',
-  opacity: 0.9
-}).addTo(map);
+// Seamark поверх
+const seamarkLayer = L.tileLayer(
+  'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+  {
+    attribution: 'Map data © OpenSeaMap contributors',
+    opacity: 0.9
+  }
+).addTo(map);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18,
-}).addTo(map);
+map.attributionControl.setPrefix(false);
 
 // Контейнеры
 let portsData = [];     // сюда запишем полученные порты
@@ -94,57 +99,6 @@ document.getElementById('routeForm').addEventListener('submit', async (e) => {
     }
 });
 
-
-
-function showRouteInForm(data) {
-    const resultDiv = document.getElementById('routeResult');
-
-    // Основная информация
-    let html = `
-      <p><b>Общее расстояние:</b> ${data.totalDistance} км</p>
-      <p><b>Длительность:</b> ${data.duration}</p>
-      <p><b>Время прибытия:</b> ${data.arrivalDateTime}</p>
-    `;
-
-    // Таблица сегментов
-    if (data.segmentsDetails && data.segmentsDetails.length > 0) {
-      html += `
-        <h3>Детализация по сегментам</h3>
-        <table border="1" cellspacing="0" cellpadding="5">
-          <tr>
-            <th>ID сегмента</th>
-            <th>Дистанция (км)</th>
-            <th>ETA на сегменте (мин)</th>
-            <th>Время на шлюзование (мин)</th>
-          </tr>
-      `;
-
-      data.segmentsDetails.forEach(seg => {
-        html += `
-          <tr>
-            <td>${seg.segmentId}</td>
-            <td>${seg.distance}</td>
-            <td>${seg.eta}</td>
-            <td>${seg.lockWait}</td>
-          </tr>
-        `;
-      });
-
-      html += '</table>';
-    }
-
-    resultDiv.innerHTML = html;
-}
-
-
-// Отрисовка маршрута (поли-линия) — использует portsData и locks если нужно
-function drawRoute(routeResponse) {
-  routeResponse.segmentsDetails.forEach(seg => {
-    const geom = typeof seg.geom === 'string' ? JSON.parse(seg.geom) : seg.geom;
-    L.geoJSON(geom).addTo(map);
-  });
-}
-
 // Функция, вызываемая из popup кнопки
 window.selectPortFromPopup = function(nodeId) {
   if (!selectedNodes.includes(nodeId)) {
@@ -211,22 +165,6 @@ map.on('contextmenu', (e) => {
         }
     });
 });
-
-
-// Функция обновления полей формы Координата А и Координата B
-function updateFormFields() {
-    if (markers[0]) {
-        const p = markers[0].getLatLng();
-        startLat.value = p.lat.toFixed(6);
-        startLon.value = p.lng.toFixed(6);
-    }
-
-    if (markers[1]) {
-        const p = markers[1].getLatLng();
-        endLat.value = p.lat.toFixed(6);
-        endLon.value = p.lng.toFixed(6);
-    }
-}
 
 // Обработка нажатия на кнопку "Очистить точки"
 document.getElementById('clearPoints').addEventListener('click', () => {

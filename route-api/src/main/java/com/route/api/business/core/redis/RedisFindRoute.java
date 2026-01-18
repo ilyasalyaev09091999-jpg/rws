@@ -1,5 +1,6 @@
-package com.route.api.business.core.redis.routetype;
+package com.route.api.business.core.redis;
 
+import com.route.api.access_data.db.jdbc.repository.PgRoutingRepository;
 import com.route.api.business.core.enitites.RouteNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -11,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RedisFindRoute {
 
-    
+    private final PgRoutingRepository repository;
 
     @Cacheable(
             value = "route-port-port",

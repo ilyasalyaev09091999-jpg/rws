@@ -1,7 +1,7 @@
 package com.route.api.business.core.preparing;
 
 import com.route.api.business.core.enitites.RouteNode;
-import com.route.api.business.core.locks.LockDto;
+import com.route.api.business.core.refdata.locks.LockDto;
 import com.route.api.rest.dto.RouteFinderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,18 +13,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PrepareRouteResponse {
 
-    public RouteFinderResponse prepare(List<RouteNode> route, LocalDateTime departureTime, int avgSpeedKmh, List<LockDto> routeLocks) {
+    public RouteFinderResponse prepare(List<RouteNode> route, LocalDateTime departureTime, List<LockDto> routeLocks,
+                                       long timeRoute) {
         double totalDistanceKm = route.get(route.size() - 1).cost() / 1000.0;
 
-        long totalSeconds = Math.round(
-                (totalDistanceKm / avgSpeedKmh) * 3600
-        );
-
-        for (int i = 0; i < routeLocks.size(); i++) {
-            totalSeconds += 7200;
-        }
-
-        return new RouteFinderResponse(formatDuration(totalSeconds), departureTime.plusSeconds(totalSeconds), totalDistanceKm, route, routeLocks);
+        return new RouteFinderResponse(formatDuration(timeRoute), departureTime.plusSeconds(timeRoute), totalDistanceKm, route, routeLocks);
     }
 
 

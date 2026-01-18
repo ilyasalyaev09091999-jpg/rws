@@ -1,4 +1,4 @@
-package com.route.api.business.core.redis.routetype;
+package com.route.api.business.core.redis;
 
 import com.route.api.business.core.refdata.ports.PortDto;
 

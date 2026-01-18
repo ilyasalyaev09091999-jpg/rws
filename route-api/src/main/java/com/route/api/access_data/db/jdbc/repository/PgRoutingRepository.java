@@ -24,10 +24,6 @@ public class PgRoutingRepository {
     }
 
 
-    @Cacheable(
-            value = "routes",
-            key = "#sourceNode + '-' + #targetNode + '-' + T(java.util.Arrays).hashCode(#bBox)"
-    )
     public List<RouteNode> findRoute(Long sourceNode, Long targetNode, double[] bBox) {
         // bBox: [minLat, minLon, maxLat, maxLon]
         double minLat = bBox[0];
@@ -83,5 +79,59 @@ public class PgRoutingRepository {
                 )
         );
     }
+
+
+    /**
+     * Строит маршрут между узлами sourceNode и targetNode без bbox.
+     * Используется для port-to-port или глобальных маршрутов.
+     *
+     * @param sourceNode ID узла отправления
+     * @param targetNode ID узла назначения
+     * @return список узлов маршрута
+     */
+    public List<RouteNode> findRoute(Long sourceNode, Long targetNode) {
+
+        String sql = """
+        SELECT
+            r.seq,
+            r.node AS node_id,
+            ST_Y(n.geom) AS lat,
+            ST_X(n.geom) AS lon,
+            r.agg_cost AS cost
+        FROM pgr_astar(
+            '
+            SELECT
+                id,
+                source,
+                target,
+                cost,
+                x1,
+                y1,
+                x2,
+                y2
+            FROM edges_astar
+            ',
+            ?, ?, directed := false
+        ) r
+        JOIN nodes n ON n.id = r.node
+        ORDER BY r.seq
+        """;
+
+        return jdbcTemplate.query(
+                sql,
+                ps -> {
+                    ps.setLong(1, sourceNode);
+                    ps.setLong(2, targetNode);
+                },
+                (rs, rowNum) -> new RouteNode(
+                        rs.getInt("seq"),
+                        rs.getLong("node_id"),
+                        rs.getDouble("lat"),
+                        rs.getDouble("lon"),
+                        rs.getDouble("cost")
+                )
+        );
+    }
+
 
 }

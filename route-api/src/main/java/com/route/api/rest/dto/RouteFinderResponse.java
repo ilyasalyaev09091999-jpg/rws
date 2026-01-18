@@ -1,7 +1,7 @@
 package com.route.api.rest.dto;
 
 import com.route.api.business.core.enitites.RouteNode;
-import com.route.api.business.core.locks.LockDto;
+import com.route.api.business.core.refdata.locks.LockDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

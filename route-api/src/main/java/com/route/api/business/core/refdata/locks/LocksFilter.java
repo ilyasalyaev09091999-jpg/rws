@@ -1,4 +1,4 @@
-package com.route.api.business.core.locks;
+package com.route.api.business.core.refdata.locks;
 
 import com.route.api.business.core.enitites.RouteNode;
 import org.springframework.stereotype.Service;

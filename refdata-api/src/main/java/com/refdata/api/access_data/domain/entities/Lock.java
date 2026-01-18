@@ -1,9 +1,10 @@
 package com.refdata.api.access_data.domain.entities;
 
-import jakarta.persistence.Column;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Универсальный класс "Шлюз" для бизнес логики и клиента
@@ -34,10 +35,5 @@ public class Lock {
      */
     private double longitude;
 
-    /**
-     * Привязка к node_id из таблицы nodes
-     *
-     */
-    private long nodeId;
-
+    private Set<Long> nodeIds = new HashSet<>();
 }

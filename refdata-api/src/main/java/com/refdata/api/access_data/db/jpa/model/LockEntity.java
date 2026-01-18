@@ -3,9 +3,11 @@ package com.refdata.api.access_data.db.jpa.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Класс-модель для таблицы directory_locks (справочная информация о шлюзах)
+ * Класс-модель для таблицы locks (справочная информация о шлюзах)
  */
 @Entity
 @Table(name = "locks")
@@ -34,6 +36,15 @@ public class LockEntity {
      */
     private double longitude;
 
+    /**
+     * Узлы графа, принадлежащие шлюзу
+     * (вход, выход, возможные альтернативные камеры)
+     */
+    @ElementCollection
+    @CollectionTable(
+            name = "lock_nodes",
+            joinColumns = @JoinColumn(name = "lock_id")
+    )
     @Column(name = "node_id")
-    private long nodeId;
+    private Set<Long> nodeIds = new HashSet<>();
 }

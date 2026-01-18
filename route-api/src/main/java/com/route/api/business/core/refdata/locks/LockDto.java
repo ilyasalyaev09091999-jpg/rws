@@ -1,4 +1,4 @@
-package com.route.api.business.core.locks;
+package com.route.api.business.core.refdata.locks;
 
 import java.util.Set;
 
