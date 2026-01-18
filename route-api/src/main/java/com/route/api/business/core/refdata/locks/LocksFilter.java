@@ -11,12 +11,16 @@ import java.util.stream.Collectors;
 public class LocksFilter {
 
     public List<LockDto> filterLocksByRoute(List<LockDto> locks, List<RouteNode> route) {
+
         Set<Long> routeNodeIds = route.stream()
                 .map(RouteNode::nodeId)
                 .collect(Collectors.toSet());
 
         return locks.stream()
-                .filter(lock -> routeNodeIds.contains(lock.nodeId()))
+                .filter(lock ->
+                        lock.nodeIds().stream()
+                                .anyMatch(routeNodeIds::contains)
+                )
                 .toList();
     }
 }
