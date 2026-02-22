@@ -1,8 +1,10 @@
+server.port: 8090
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5434/geography
-    username: geography
-    password: geography
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/geography}
+    username: ${SPRING_DATASOURCE_USERNAME:geography}
+    password: ${SPRING_DATASOURCE_PASSWORD:geography}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -12,13 +14,22 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  redis:
-    host: localhost
-    port: 6379
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:redis-route}
+      port: ${SPRING_REDIS_PORT:6379}
 
-  cache:
-    type: redis
+    cache:
+      type: redis
 
-logging:
-  level:
-    org.springframework.cache: DEBUG
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: prometheus,health
+  metrics:
+    export:
+      prometheus:
+        enabled: true

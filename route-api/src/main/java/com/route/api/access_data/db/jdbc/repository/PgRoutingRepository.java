@@ -2,7 +2,6 @@ package com.route.api.access_data.db.jdbc.repository;
 
 import com.route.api.business.core.enitites.RouteNode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import java.util.List;

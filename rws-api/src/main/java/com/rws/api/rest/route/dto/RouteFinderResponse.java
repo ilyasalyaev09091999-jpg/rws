@@ -1,4 +1,4 @@
-package com.route.api.rest.dto;
+package com.rws.api.rest.route.dto;
 
 import com.route.api.business.core.enitites.RouteNode;
 import com.route.api.business.core.refdata.locks.LockDto;

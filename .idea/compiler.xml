@@ -7,27 +7,18 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
         </processorPath>
-        <module name="route-api.main" />
+        <module name="routing-waterway-system.route-api.main" />
+        <module name="routing-waterway-system.rws-api.main" />
+        <module name="routing-waterway-system.refdata-api.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
+        </processorPath>
+        <module name="routing-waterway-system.geography-importer.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="geography-importer" target="17" />
-      <module name="geography-importer.main" target="17" />
-      <module name="geography-importer.test" target="17" />
-      <module name="osm4j-api" target="17" />
-      <module name="osm4j-api.main" target="17" />
-      <module name="osm4j-api.test" target="17" />
-      <module name="osm4j.main" target="17" />
-      <module name="osm4j.test" target="17" />
-      <module name="refdata-api" target="17" />
-      <module name="refdata-api.main" target="17" />
-      <module name="refdata-api.test" target="17" />
-      <module name="route-api" target="17" />
-      <module name="route-api.main" target="17" />
-      <module name="route-api.test" target="17" />
-      <module name="untitled" target="17" />
-      <module name="untitled.main" target="17" />
-      <module name="untitled.test" target="17" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="17" />
   </component>
 </project>

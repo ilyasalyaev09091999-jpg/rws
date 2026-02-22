@@ -63,10 +63,16 @@ document.getElementById('routeForm').addEventListener('submit', async (e) => {
         const speed = document.getElementById('speed').value;
 
         const params = new URLSearchParams({ startLon, startLat, endLon, endLat, departureTime, speed });
-        const response = await fetch(`http://localhost:8080/api/route/find?${params.toString()}`);
-        if (!response.ok) throw new Error('Ошибка запроса');
-
+        const response = await fetch(`http://localhost:8090/api/route/find?${params.toString()}`);
         const data = await response.json();
+        if (response.status === 400) {
+            throw new Error(data.message);
+        }
+
+        if (!response.ok) {
+            throw new Error('Ошибка сервера');
+        }
+
 
         // Рисуем маршрут на карте
         const latlngs = data.route.map(p => [p.lat, p.lon]);

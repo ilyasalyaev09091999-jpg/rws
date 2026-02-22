@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: redis
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+
+  - job_name: geography-postgres
+    static_configs:
+      - targets: ["geography-postgres-exporter:9187"]
+
+  - job_name: refdata-postgres
+    static_configs:
+      - targets: ["refdata-postgres-exporter:9187"]
+
+  # Сервисы в docker
+  - job_name: refdata-api
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ "refdata-api:8092" ]
+
+  - job_name: route-api
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ "route-api:8090" ]
+
+  - job_name: geography-importer
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [ "geography-importer:8091" ]

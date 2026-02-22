@@ -1,4 +1,4 @@
-package com.route.api.rest.controller.error;
+package com.rws.api.rest.route.controller.error;
 
 import com.route.api.business.core.exceptions.RouteNotFoundException;
 import org.springframework.http.HttpStatus;

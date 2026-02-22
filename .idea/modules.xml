@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/geography-importer.iml" filepath="$PROJECT_DIR$/geography-importer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/geography-importer.main.iml" filepath="$PROJECT_DIR$/.idea/modules/geography-importer.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/geography-importer.test.iml" filepath="$PROJECT_DIR$/.idea/modules/geography-importer.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/refdata-api.iml" filepath="$PROJECT_DIR$/refdata-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/refdata-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/refdata-api.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/refdata-api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/refdata-api.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/route-api.iml" filepath="$PROJECT_DIR$/route-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/route-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/route-api.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/route-api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/route-api.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/routing-waterway-system.iml" filepath="$PROJECT_DIR$/routing-waterway-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/geography-importer/routing-waterway-system.geography-importer.main.iml" filepath="$PROJECT_DIR$/.idea/modules/geography-importer/routing-waterway-system.geography-importer.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/refdata-api/routing-waterway-system.refdata-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/refdata-api/routing-waterway-system.refdata-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/route-api/routing-waterway-system.route-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/route-api/routing-waterway-system.route-api.main.iml" />
     </modules>
   </component>
 </project>

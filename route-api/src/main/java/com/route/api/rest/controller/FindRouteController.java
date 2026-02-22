@@ -1,5 +1,6 @@
 package com.route.api.rest.controller;
 
+import com.route.api.business.core.exceptions.RouteNotFoundException;
 import com.route.api.business.manager.FindRouteManager;
 import com.route.api.rest.dto.RouteFinderRequest;
 import com.route.api.rest.dto.RouteFinderResponse;
@@ -19,7 +20,8 @@ public class FindRouteController {
 
     @GetMapping("/find")
     public ResponseEntity<RouteFinderResponse> findRoute(@RequestParam double startLon, @RequestParam double startLat, @RequestParam double endLon,
-                                                         @RequestParam double endLat, @RequestParam LocalDateTime departureTime, @RequestParam int speed) {
+                                                         @RequestParam double endLat, @RequestParam LocalDateTime departureTime, @RequestParam int speed)
+            throws RouteNotFoundException {
         RouteFinderRequest request = new RouteFinderRequest(startLon, startLat, endLon, endLat, departureTime, speed);
         return ResponseEntity.ok(findRouteManager.findRoute(request));
     }

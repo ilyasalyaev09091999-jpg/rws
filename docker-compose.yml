@@ -8,9 +8,16 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.63.0
+    container_name: redis-exporter
+    environment:
+      REDIS_ADDR: redis://redis:6379
+    depends_on:
+      - redis
+
   geography-postgres:
-    build: .
-    image: postgres:16
+    image: pgrouting/pgrouting:16-3.5-4.0
     container_name: geography-postgres
     environment:
       POSTGRES_USER: geography
@@ -18,7 +25,7 @@ services:
       POSTGRES_DB: geography
     volumes:
       - ./infrastructure/databases/geography:/docker-entrypoint-initdb.d:ro
-      - pgdata:/var/lib/postgresql/data
+      - cd24b5a5e36c902ce74decce9776ee144b05b72595d33e217c58a49449a02d1c:/var/lib/postgresql/data
     ports:
       - "5434:5432"
     healthcheck:
@@ -26,6 +33,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 20
+
+  geography-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: geography-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://geography:geography@geography-postgres:5432/geography?sslmode=disable"
+    depends_on:
+      - geography-postgres
+
+  geography-importer:
+    build: ./geography-importer
+    container_name: geography-importer
+    ports:
+      - "8091:8091"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://geography-postgres:5432/geography
+      SPRING_DATASOURCE_USERNAME: geography
+      SPRING_DATASOURCE_PASSWORD: geography
+    depends_on:
+      - geography-postgres
+      - redis
 
   refdata-postgres:
     image: postgres:16
@@ -36,14 +64,100 @@ services:
       POSTGRES_DB: refdata
     volumes:
       - ./infrastructure/databases/refdata:/docker-entrypoint-initdb.d:ro
+      - d11928472a7d52d2765187b85dac43abe25a6cf8ab94d7b47d148eba5378adc8:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U refdata -p 5433" ]
+      test: [ "CMD-SHELL", "pg_isready -U refdata -p 5432" ]
       interval: 10s
       timeout: 5s
       retries: 20
 
+  refdata-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: refdata-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://refdata:refdata@refdata-postgres:5432/refdata?sslmode=disable"
+    depends_on:
+      - refdata-postgres
+
+  refdata-api:
+    build: ./refdata-api
+    container_name: refdata-api
+    ports:
+      - "8092:8092"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://refdata-postgres:5432/refdata
+      SPRING_DATASOURCE_USERNAME: refdata
+      SPRING_DATASOURCE_PASSWORD: refdata
+    depends_on:
+      - refdata-postgres
+      - redis
+
+  route-api:
+    build: ./route-api
+    container_name: route-api
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://geography-postgres:5432/geography
+      SPRING_DATASOURCE_USERNAME: geography
+      SPRING_DATASOURCE_PASSWORD: geography
+      SPRING_REDIS_HOST: redis-route
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      - geography-postgres
+      - redis
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: prometheus
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.4.3
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - loki
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.4
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.4
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./infrastructure/loki/promtail.yml:/etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml
+    depends_on:
+      - loki
+
+
 volumes:
+  cd24b5a5e36c902ce74decce9776ee144b05b72595d33e217c58a49449a02d1c:
+    external: true
+  d11928472a7d52d2765187b85dac43abe25a6cf8ab94d7b47d148eba5378adc8:
+    external: true
   redis_data:
-  pgdata:
+  grafana_data:

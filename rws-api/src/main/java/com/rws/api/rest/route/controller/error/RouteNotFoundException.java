@@ -1,4 +1,4 @@
-package com.route.api.business.core.exceptions;
+package com.rws.api.rest.route.controller.error;
 
 public class RouteNotFoundException extends Exception {
 

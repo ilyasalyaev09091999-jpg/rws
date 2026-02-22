@@ -6,6 +6,7 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
+
 /**
  * Универсальный класс "Шлюз" для бизнес логики и клиента
  */

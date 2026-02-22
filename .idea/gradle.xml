@@ -1,35 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/geography-importer" />
-        <option name="gradleHome" value="" />
-        <option name="gradleJvm" value="17" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/geography-importer" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/refdata-api" />
-        <option name="gradleHome" value="" />
-        <option name="gradleJvm" value="17" />
-        <option name="modules">
-          <set>
+            <option value="$PROJECT_DIR$/logging-common" />
             <option value="$PROJECT_DIR$/refdata-api" />
-          </set>
-        </option>
-      </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="externalProjectPath" value="$PROJECT_DIR$/route-api" />
-        <option name="gradleHome" value="" />
-        <option name="gradleJvm" value="17" />
-        <option name="modules">
-          <set>
+            <option value="$PROJECT_DIR$/refdata-proto" />
             <option value="$PROJECT_DIR$/route-api" />
+            <option value="$PROJECT_DIR$/rws-api" />
           </set>
         </option>
       </GradleProjectSettings>

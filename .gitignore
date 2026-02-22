@@ -1,0 +1,19 @@
+# Компиляция
+*.class
+*.jar
+*.war
+*.ear
+
+# Логи
+*.log
+
+# IDE (IntelliJ IDEA)
+.idea/
+*.iml
+out/
+target/
+
+# Maven / Gradle
+/.mvn
+/build
+/.gradle

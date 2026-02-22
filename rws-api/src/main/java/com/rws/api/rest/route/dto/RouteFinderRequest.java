@@ -1,4 +1,4 @@
-package com.route.api.rest.dto;
+package com.rws.api.rest.route.dto;
 
 import java.time.LocalDateTime;
 

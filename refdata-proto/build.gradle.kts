@@ -13,7 +13,10 @@ repositories {
 dependencies {
     api("io.grpc:grpc-protobuf:1.60.0")
     api("io.grpc:grpc-stub:1.60.0")
-    api("com.google.protobuf:protobuf-java:3.25.0")
+    api("com.google.protobuf:protobuf-java:4.28.2")
+
+    // ВАЖНО — именно implementation, не compileOnly
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
 }
 
 protobuf {
@@ -26,9 +29,11 @@ protobuf {
         }
     }
     generateProtoTasks {
-        all().forEach {
-            it.plugins {
-                id("grpc")
+        all().forEach { task ->
+            task.plugins {
+                id("grpc") {
+                    option("annotation_package=jakarta.annotation")
+                }
             }
         }
     }

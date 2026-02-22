@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package refdata;
+
+option java_multiple_files = true;
+option java_package = "com.refdata.grpc";
+option java_outer_classname = "RefDataProto";
+
+// =======================
+// Service
+// =======================
+
+service RefDataService {
+
+  rpc GetAllLocks (Empty) returns (LockList);
+
+  rpc GetAllPorts (Empty) returns (PortList);
+}
+
+// =======================
+// Common
+// =======================
+
+message Empty {}
+
+// =======================
+// Lock
+// =======================
+
+message Lock {
+
+  // Уникальный идентификатор шлюза
+  string id = 1;
+
+  // Название шлюза
+  string name = 2;
+
+  // Географические координаты
+  double latitude = 3;
+  double longitude = 4;
+
+  // Связанные nodeIds
+  repeated int64 node_ids = 5;
+}
+
+message LockList {
+  repeated Lock locks = 1;
+}
+
+// =======================
+// Port
+// =======================
+
+message Port {
+
+  // Уникальный идентификатор порта
+  string id = 1;
+
+  // Название
+  string name = 2;
+
+  // Географические координаты
+  double latitude = 3;
+  double longitude = 4;
+}
+
+message PortList {
+  repeated Port ports = 1;
+}

@@ -11,6 +11,10 @@ public enum RedisRouteType {
 
     public static RedisRouteType defineRouteType(List<PortDto> allPorts, double startLongitude, double startLatitude, double endLongitude,
                                                  double endLatitude) {
+        if (allPorts == null || allPorts.isEmpty()) {
+            return AD_HOC;
+        }
+
         boolean isPortStart = false;
         boolean isPortEnd = false;
         for (PortDto port : allPorts) {

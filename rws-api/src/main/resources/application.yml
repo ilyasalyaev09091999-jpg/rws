@@ -1,0 +1,5 @@
+server.port: 8093
+
+grpc:
+  refdata:
+    address: "refdata-api:8092"
