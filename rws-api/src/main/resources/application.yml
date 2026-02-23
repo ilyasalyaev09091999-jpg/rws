@@ -1,5 +1,21 @@
-server.port: 8093
+server:
+  port: 8083
 
 grpc:
-  refdata:
-    address: "refdata-api:8092"
+  clients:
+    refdata:
+      address: ${GRPC_REF_DATA_ADDRESS}
+    route:
+      address: ${GRPC_ROUTE_ADDRESS}
+      enableKeepAlive: true
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: prometheus,health
+  metrics:
+    export:
+      prometheus:
+        enabled: true

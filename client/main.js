@@ -63,7 +63,7 @@ document.getElementById('routeForm').addEventListener('submit', async (e) => {
         const speed = document.getElementById('speed').value;
 
         const params = new URLSearchParams({ startLon, startLat, endLon, endLat, departureTime, speed });
-        const response = await fetch(`http://localhost:8090/api/route/find?${params.toString()}`);
+        const response = await fetch(`http://localhost:8083/api/route/find?${params.toString()}`);
         const data = await response.json();
         if (response.status === 400) {
             throw new Error(data.message);
@@ -241,7 +241,7 @@ const markersLayerLock = L.layerGroup().addTo(map);
 
 // Загрузка шлюзов
 loadAndDrawPoints({
-    url: 'http://localhost:8092/api/locks/get',
+    url: 'http://localhost:8083/api/locks/get',
     layer: markersLayerLock,
     style: {
         radius: 6,
@@ -263,7 +263,7 @@ let markersLayerPort = L.layerGroup().addTo(map);
 document.addEventListener('DOMContentLoaded', () => {
 
     loadAndDrawPoints({
-        url: 'http://localhost:8092/api/ports/get',
+        url: 'http://localhost:8083/api/ports/get',
         layer: markersLayerPort,
         style: {
             radius: 8,

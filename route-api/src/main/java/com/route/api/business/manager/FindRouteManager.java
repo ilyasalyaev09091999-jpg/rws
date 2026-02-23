@@ -3,26 +3,26 @@ package com.route.api.business.manager;
 import com.route.api.access_data.db.jdbc.repository.GraphVersionRepository;
 import com.route.api.access_data.db.jdbc.repository.PgRoutingRepository;
 import com.route.api.business.core.bbox.BBoxCreator;
+import com.route.api.business.core.client.RouteFinderRequest;
 import com.route.api.business.core.exceptions.RouteNotFoundException;
 import com.route.api.business.core.redis.RedisFindRoute;
 import com.route.api.business.core.redis.RedisRouteType;
-import com.route.api.business.core.refdata.RefDataClient;
+import com.route.api.business.core.refdata.client.RefDataClient;
 import com.route.api.business.core.refdata.locks.LockDto;
 import com.route.api.business.core.refdata.locks.LocksFilter;
 import com.route.api.business.core.preparing.PrepareRouteResponse;
 import com.route.api.business.core.refdata.ports.PortDto;
 import com.route.api.business.core.timeroute.TimeRouteCalculator;
-import com.route.api.rest.dto.RouteFinderRequest;
 import com.route.api.business.core.enitites.RouteNode;
 import com.route.api.rest.dto.RouteFinderResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class FindRouteManager {
 
     private final GraphVersionRepository graphVersionRepository;
@@ -33,6 +33,21 @@ public class FindRouteManager {
     private final LocksFilter locksFilter;
     private final TimeRouteCalculator routeCalculator;
     private final RedisFindRoute redisFindRoute;
+
+    @Autowired
+    public FindRouteManager(GraphVersionRepository graphVersionRepository, PgRoutingRepository routingRepository,
+                            BBoxCreator bBoxCreator, PrepareRouteResponse prepareRouteResponse,
+                            @Qualifier("RefDataGrpcClient") RefDataClient refDataClient,
+                            LocksFilter locksFilter, TimeRouteCalculator routeCalculator, RedisFindRoute redisFindRoute) {
+        this.graphVersionRepository = graphVersionRepository;
+        this.routingRepository = routingRepository;
+        this.bBoxCreator = bBoxCreator;
+        this.prepareRouteResponse = prepareRouteResponse;
+        this.refDataClient = refDataClient;
+        this.locksFilter = locksFilter;
+        this.routeCalculator = routeCalculator;
+        this.redisFindRoute = redisFindRoute;
+    }
 
     public RouteFinderResponse findRoute(RouteFinderRequest request) throws RouteNotFoundException {
         log.info("Find route request");
@@ -47,7 +62,7 @@ public class FindRouteManager {
         }
         log.info("Node id A: {}, Node id B: {}", nodeIdA, nodeIdB);
 
-        List<PortDto> allPorts = refDataClient.getAllPorts();
+        List<PortDto> allPorts = refDataClient.getPorts();
         log.info("Ports: {}", allPorts);
         RedisRouteType redisRouteType = RedisRouteType.defineRouteType(allPorts, request.startLongitude(), request.startLatitude(),
                 request.endLongitude(), request.endLatitude());
@@ -67,7 +82,7 @@ public class FindRouteManager {
             throw new RouteNotFoundException("Не удалось поостроить маршрут");
         }
 
-        List<LockDto> allLocks = refDataClient.getAllLocks();
+        List<LockDto> allLocks = refDataClient.getLocks();
         log.info("All locks: {}", allLocks);
         List<LockDto> routeLocks = locksFilter.filterLocksByRoute(allLocks, route);
         log.info("Route locks: {}", routeLocks);

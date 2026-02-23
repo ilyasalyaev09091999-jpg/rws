@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.route.grpc";
+option java_outer_classname = "RouteProto";
+
+package route;
+
+import "google/protobuf/timestamp.proto";
+
+service RouteService {
+  rpc FindRoute (RouteFinderRequest) returns (RouteFinderResponse);
+}
+
+message RouteFinderRequest {
+  double startLongitude = 1;
+  double startLatitude = 2;
+  double endLongitude = 3;
+  double endLatitude = 4;
+  google.protobuf.Timestamp departureTime = 5;
+  int32 speed = 6;
+}
+
+message RouteFinderResponse {
+  string duration = 1;
+  google.protobuf.Timestamp arrivalDateTime = 2;
+  double totalDistance = 3;
+  repeated RouteNode route = 4;
+  repeated LockDto routeLocks = 5;
+}
+
+message RouteNode {
+  int32 seq = 1;
+  int64 nodeId = 2;
+  double lat = 3;
+  double lon = 4;
+  double cost = 5;
+}
+
+message LockDto {
+  string id = 1;
+  string name = 2;
+  double latitude = 3;
+  double longitude = 4;
+  repeated int64 nodeIds = 5;
+}

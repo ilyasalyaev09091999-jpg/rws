@@ -40,4 +40,10 @@ dependencies {
 
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    // gRPC
+    implementation(project(":route-proto"))
+    implementation(project(":refdata-proto"))
+    implementation("io.grpc:grpc-netty-shaded:1.75.0")
+    implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
 }

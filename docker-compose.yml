@@ -46,7 +46,7 @@ services:
     build: ./geography-importer
     container_name: geography-importer
     ports:
-      - "8091:8091"
+      - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://geography-postgres:5432/geography
       SPRING_DATASOURCE_USERNAME: geography
@@ -85,7 +85,7 @@ services:
     build: ./refdata-api
     container_name: refdata-api
     ports:
-      - "8092:8092"
+      - "8082:8082"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://refdata-postgres:5432/refdata
       SPRING_DATASOURCE_USERNAME: refdata
@@ -98,7 +98,7 @@ services:
     build: ./route-api
     container_name: route-api
     ports:
-      - "8090:8090"
+      - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://geography-postgres:5432/geography
       SPRING_DATASOURCE_USERNAME: geography
@@ -108,6 +108,15 @@ services:
     depends_on:
       - geography-postgres
       - redis
+
+  rws-api:
+    build: ./rws-api
+    container_name: rws-api
+    ports:
+      - "8083:8083"
+    environment:
+      GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
+      GRPC_ROUTE_ADDRESS: dns:///route-api:8090
 
   prometheus:
     image: prom/prometheus:v2.52.0

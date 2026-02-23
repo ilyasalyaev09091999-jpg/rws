@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,7 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LockCacheService {
 
-    private final RefDataServiceGrpc.RefDataServiceBlockingStub stub;
+    @GrpcClient("refdata")
+    private RefDataServiceGrpc.RefDataServiceBlockingStub stub;
 
     @Getter
     private volatile List<Lock> locks = List.of();
