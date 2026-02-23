@@ -1,4 +1,9 @@
-server.port: 8090
+server:
+  port: 8080
+
+grpc:
+  server:
+    port: 8090
 
 spring:
   datasource:
