@@ -14,7 +14,7 @@ import com.route.api.business.core.preparing.PrepareRouteResponse;
 import com.route.api.business.core.refdata.ports.PortDto;
 import com.route.api.business.core.timeroute.TimeRouteCalculator;
 import com.route.api.business.core.enitites.RouteNode;
-import com.route.api.rest.dto.RouteFinderResponse;
+import com.route.api.business.core.client.RouteFinderResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

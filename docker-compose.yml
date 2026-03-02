@@ -82,7 +82,9 @@ services:
       - refdata-postgres
 
   refdata-api:
-    build: ./refdata-api
+    build:
+      context: .
+      dockerfile: refdata-api/Dockerfile
     container_name: refdata-api
     ports:
       - "8082:8082"
@@ -95,7 +97,9 @@ services:
       - redis
 
   route-api:
-    build: ./route-api
+    build:
+      context: .
+      dockerfile: route-api/Dockerfile
     container_name: route-api
     ports:
       - "8080:8080"
@@ -105,18 +109,31 @@ services:
       SPRING_DATASOURCE_PASSWORD: geography
       SPRING_REDIS_HOST: redis-route
       SPRING_REDIS_PORT: 6379
+      GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
     depends_on:
       - geography-postgres
       - redis
+      - refdata-api
 
   rws-api:
-    build: ./rws-api
+    build:
+      context: .
+      dockerfile: rws-api/Dockerfile
     container_name: rws-api
     ports:
       - "8083:8083"
     environment:
       GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
       GRPC_ROUTE_ADDRESS: dns:///route-api:8090
+      OTEL_SERVICE_NAME: rws-api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
+    depends_on:
+      - route-api
+      - refdata-api
 
   prometheus:
     image: prom/prometheus:v2.52.0
@@ -162,6 +179,18 @@ services:
     depends_on:
       - loki
 
+  tempo:
+    image: grafana/tempo:2.4.1
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./infrastructure/tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo_data:/var/tempo
+    ports:
+      - "3200:3200"   # HTTP
+      - "4317:4317"   # OTLP gRPC
+    restart: unless-stopped
+
 
 volumes:
   cd24b5a5e36c902ce74decce9776ee144b05b72595d33e217c58a49449a02d1c:
@@ -170,3 +199,4 @@ volumes:
     external: true
   redis_data:
   grafana_data:
+  tempo_data:

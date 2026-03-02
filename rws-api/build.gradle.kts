@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.rws.api"
-version = "1.0-SNAPSHOT"
+version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
@@ -23,13 +23,11 @@ dependencies {
     // gRPC
     implementation(project(":refdata-proto"))
     implementation(project(":route-proto"))
-    implementation("io.grpc:grpc-netty-shaded:1.75.0")
+    implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
 
     compileOnly("org.projectlombok:lombok:1.18.32")
     annotationProcessor("org.projectlombok:lombok:1.18.32")
 
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-
-    implementation("net.devh:grpc-client-spring-boot-starter:2.15.0.RELEASE")
 }

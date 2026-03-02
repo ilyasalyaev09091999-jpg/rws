@@ -1,8 +1,8 @@
 package com.rws.api.cache;
 
 import com.refdata.grpc.Empty;
-import com.refdata.grpc.Port;
-import com.refdata.grpc.RefDataServiceGrpc;
+import com.refdata.grpc.PortForRws;
+import com.refdata.grpc.PortServiceGrpc;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +18,10 @@ import java.util.List;
 public class PortCacheService {
 
     @GrpcClient("refdata")
-    private RefDataServiceGrpc.RefDataServiceBlockingStub stub;
+    private PortServiceGrpc.PortServiceBlockingStub stub;
 
     @Getter
-    private volatile List<Port> ports = List.of();
+    private volatile List<PortForRws> ports = List.of();
 
     @PostConstruct
     public void init() {
@@ -31,7 +31,7 @@ public class PortCacheService {
     @Scheduled(fixedDelay = 10 * 60 * 1000) // каждые 10 минут
     public synchronized void refresh() {
         try {
-            ports = stub.getAllPorts(Empty.newBuilder().build()).getPortsList();
+            ports = stub.getAllPortsForRws(Empty.newBuilder().build()).getPortsList();
             log.info("Ports cache refreshed: ports = {}", ports.size());
         } catch (Exception e) {
             log.info("Failed to refresh ports cache: {}", e.getMessage());

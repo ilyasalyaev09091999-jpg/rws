@@ -1,24 +1,20 @@
-package com.refdata.api.access_data.db.jpa.model;
+package com.refdata.api.domain.entities.rws_api;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Класс-модель порта для таблицы ports (справочная информация о портах).
+ * DTO для сервиса rws-api
  */
-@Entity
-@Table(name = "ports")
 @Getter
 @Setter
 @ToString(onlyExplicitlyIncluded = true)
-public class PortEntity {
+public class PortForRws {
 
     /**
      * Уникальный ID порта
      */
-    @Id
     @ToString.Include
     private String id;
 

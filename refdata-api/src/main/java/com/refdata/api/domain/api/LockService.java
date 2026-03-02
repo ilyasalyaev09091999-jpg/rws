@@ -1,5 +1,6 @@
-package com.refdata.api.access_data.domain.api;
-import com.refdata.api.access_data.domain.entities.Lock;
+package com.refdata.api.domain.api;
+import com.refdata.api.domain.entities.route_api.LockForRoute;
+import com.refdata.api.domain.entities.rws_api.LockForRws;
 
 import java.util.List;
 
@@ -9,5 +10,7 @@ import java.util.List;
  */
 public interface LockService {
 
-    List<Lock> findAll();
+    List<LockForRws> getAllLocksForRws();
+
+    List<LockForRoute> getAllLocksForRoute();
 }

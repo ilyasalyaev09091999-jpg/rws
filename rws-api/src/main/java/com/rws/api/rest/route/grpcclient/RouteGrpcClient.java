@@ -13,7 +13,6 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -38,7 +37,7 @@ public class RouteGrpcClient {
         com.route.grpc.RouteFinderResponse protoResponse;
         try {
             protoResponse = stub
-                    .withDeadlineAfter(5, TimeUnit.SECONDS)
+                    .withDeadlineAfter(300, TimeUnit.SECONDS)
                     .findRoute(protoRequest);
 
         } catch (StatusRuntimeException e) {
@@ -67,7 +66,7 @@ public class RouteGrpcClient {
                         .map(r -> new RouteNode(r.getSeq(), r.getNodeId(), r.getLat(), r.getLon(), r.getCost()))
                         .toList(),
                 response.getRouteLocksList().stream()
-                        .map(l -> new LockDto(l.getId(), l.getName(), l.getLatitude(), l.getLongitude(), new HashSet<>(l.getNodeIdsList())))
+                        .map(l -> new LockDto(l.getName()))
                         .toList()
         );
     }

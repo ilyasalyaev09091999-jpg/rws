@@ -1,8 +1,8 @@
 package com.rws.api.cache;
 
 import com.refdata.grpc.Empty;
-import com.refdata.grpc.Lock;
-import com.refdata.grpc.RefDataServiceGrpc;
+import com.refdata.grpc.LockForRws;
+import com.refdata.grpc.LockServiceGrpc;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +18,10 @@ import java.util.List;
 public class LockCacheService {
 
     @GrpcClient("refdata")
-    private RefDataServiceGrpc.RefDataServiceBlockingStub stub;
+    private LockServiceGrpc.LockServiceBlockingStub stub;
 
     @Getter
-    private volatile List<Lock> locks = List.of();
+    private volatile List<LockForRws> locks = List.of();
 
     @PostConstruct
     public void init() {
@@ -31,7 +31,7 @@ public class LockCacheService {
     @Scheduled(fixedDelay = 10 * 60 * 1000) // каждые 10 минут
     public synchronized void refresh() {
         try {
-            locks = stub.getAllLocks(Empty.newBuilder().build()).getLocksList();
+            locks = stub.getAllLocksForRws(Empty.newBuilder().build()).getLocksList();
             log.info("Locks cache refreshed: locks = {}", locks.size());
         } catch (Exception e) {
             log.info("Failed to refresh locks cache: {}", e.getMessage());

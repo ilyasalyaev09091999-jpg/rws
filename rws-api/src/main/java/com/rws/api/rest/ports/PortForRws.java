@@ -1,14 +1,16 @@
-package com.refdata.api.access_data.domain.entities;
+package com.rws.api.rest.ports;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Универсальный класс "Порт" для бизнес логики и клиента
+ * DTO для сервиса rws-api
  */
 @Getter
 @Setter
-public class Port {
+@ToString
+public class PortForRws {
 
     /**
      * Уникальный ID порта

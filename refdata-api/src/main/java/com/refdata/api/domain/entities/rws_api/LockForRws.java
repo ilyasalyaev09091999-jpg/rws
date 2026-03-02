@@ -1,24 +1,21 @@
-package com.refdata.api.access_data.domain.entities;
+package com.refdata.api.domain.entities.rws_api;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.HashSet;
-import java.util.Set;
-
+import lombok.ToString;
 
 /**
- * Универсальный класс "Шлюз" для бизнес логики и клиента
+ * DTO для сервиса rws-api
  */
 @Getter
 @Setter
-@EqualsAndHashCode
-public class Lock {
+@ToString(onlyExplicitlyIncluded = true)
+public class LockForRws {
 
     /**
      * Уникальный идентификатор шлюза
      */
-    @EqualsAndHashCode.Include
+    @ToString.Include
     private String id;
 
     /**
@@ -35,6 +32,4 @@ public class Lock {
      * Долгота
      */
     private double longitude;
-
-    private Set<Long> nodeIds = new HashSet<>();
 }

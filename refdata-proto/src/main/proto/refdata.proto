@@ -10,11 +10,16 @@ option java_outer_classname = "RefDataProto";
 // Service
 // =======================
 
-service RefDataService {
+service LockService {
+    rpc GetAllLocksForRws(Empty) returns (LockListForRws);
 
-  rpc GetAllLocks (Empty) returns (LockList);
+    rpc GetAllLocksForRoute(Empty) returns (LockListForRoute);
+}
 
-  rpc GetAllPorts (Empty) returns (PortList);
+service PortService {
+    rpc GetAllPortsForRws(Empty) returns (PortListForRws);
+
+    rpc GetAllPortsForRoute(Empty) returns (PortListForRoute);
 }
 
 // =======================
@@ -24,10 +29,10 @@ service RefDataService {
 message Empty {}
 
 // =======================
-// Lock
+// LockForRws
 // =======================
 
-message Lock {
+message LockForRws {
 
   // Уникальный идентификатор шлюза
   string id = 1;
@@ -38,20 +43,30 @@ message Lock {
   // Географические координаты
   double latitude = 3;
   double longitude = 4;
-
-  // Связанные nodeIds
-  repeated int64 node_ids = 5;
 }
 
-message LockList {
-  repeated Lock locks = 1;
+message LockListForRws {
+  repeated LockForRws locks = 1;
 }
 
 // =======================
-// Port
+// LockForRoute
 // =======================
 
-message Port {
+message LockForRoute {
+  string name = 1;
+  repeated int64 nodeIds = 2;
+}
+
+message LockListForRoute {
+  repeated LockForRoute locks = 1;
+}
+
+// =======================
+// PortForRws
+// =======================
+
+message PortForRws {
 
   // Уникальный идентификатор порта
   string id = 1;
@@ -64,6 +79,21 @@ message Port {
   double longitude = 4;
 }
 
-message PortList {
-  repeated Port ports = 1;
+message PortListForRws {
+  repeated PortForRws ports = 1;
+}
+
+
+// =======================
+// PortForRoute
+// =======================
+
+message PortForRoute {
+  // Географические координаты
+  double latitude = 3;
+  double longitude = 4;
+}
+
+message PortListForRoute {
+  repeated PortForRoute ports = 1;
 }

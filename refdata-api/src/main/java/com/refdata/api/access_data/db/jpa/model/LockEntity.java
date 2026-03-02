@@ -3,6 +3,8 @@ package com.refdata.api.access_data.db.jpa.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,12 +15,14 @@ import java.util.Set;
 @Table(name = "locks")
 @Getter
 @Setter
+@ToString(onlyExplicitlyIncluded = true)
 public class LockEntity {
 
     /**
      * Уникальный идентификатор шлюза
      */
     @Id
+    @ToString.Include
     private String id;
 
     /**

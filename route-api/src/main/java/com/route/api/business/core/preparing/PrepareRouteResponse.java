@@ -2,7 +2,7 @@ package com.route.api.business.core.preparing;
 
 import com.route.api.business.core.enitites.RouteNode;
 import com.route.api.business.core.refdata.locks.LockDto;
-import com.route.api.rest.dto.RouteFinderResponse;
+import com.route.api.business.core.client.RouteFinderResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

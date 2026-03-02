@@ -44,6 +44,6 @@ dependencies {
     // gRPC
     implementation(project(":route-proto"))
     implementation(project(":refdata-proto"))
-    implementation("io.grpc:grpc-netty-shaded:1.75.0")
+    implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
     implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
 }

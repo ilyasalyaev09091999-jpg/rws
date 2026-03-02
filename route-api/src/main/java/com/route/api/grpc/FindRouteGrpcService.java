@@ -6,7 +6,7 @@ import com.route.api.business.core.enitites.RouteNode;
 import com.route.api.business.core.exceptions.RouteNotFoundException;
 import com.route.api.business.core.refdata.locks.LockDto;
 import com.route.api.business.manager.FindRouteManager;
-import com.route.api.rest.dto.RouteFinderResponse;
+import com.route.api.business.core.client.RouteFinderResponse;
 import com.route.grpc.RouteServiceGrpc;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -106,11 +106,7 @@ public class FindRouteGrpcService extends RouteServiceGrpc.RouteServiceImplBase 
 
     private com.route.grpc.LockDto mapLock(LockDto lock) {
         return com.route.grpc.LockDto.newBuilder()
-                .setId(lock.id())
                 .setName(lock.name())
-                .setLatitude(lock.latitude())
-                .setLongitude(lock.longitude())
-                .addAllNodeIds(lock.nodeIds())
                 .build();
     }
 

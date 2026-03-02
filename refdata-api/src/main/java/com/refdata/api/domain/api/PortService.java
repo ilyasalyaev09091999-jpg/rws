@@ -1,6 +1,7 @@
-package com.refdata.api.access_data.domain.api;
+package com.refdata.api.domain.api;
 
-import com.refdata.api.access_data.domain.entities.Port;
+import com.refdata.api.domain.entities.route_api.PortForRoute;
+import com.refdata.api.domain.entities.rws_api.PortForRws;
 
 import java.util.List;
 
@@ -10,5 +11,7 @@ import java.util.List;
  */
 public interface PortService {
 
-    List<Port> findAll();
+    List<PortForRws> getAllLocksForRws();
+
+    List<PortForRoute> getAllPortsForRoute();
 }
