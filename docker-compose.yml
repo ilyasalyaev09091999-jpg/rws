@@ -92,6 +92,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://refdata-postgres:5432/refdata
       SPRING_DATASOURCE_USERNAME: refdata
       SPRING_DATASOURCE_PASSWORD: refdata
+      OTEL_SERVICE_NAME: refdata-api
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
     depends_on:
       - refdata-postgres
       - redis
@@ -110,6 +116,12 @@ services:
       SPRING_REDIS_HOST: redis-route
       SPRING_REDIS_PORT: 6379
       GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
+      OTEL_SERVICE_NAME: route-api
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
     depends_on:
       - geography-postgres
       - redis
@@ -126,7 +138,7 @@ services:
       GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
       GRPC_ROUTE_ADDRESS: dns:///route-api:8090
       OTEL_SERVICE_NAME: rws-api
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       OTEL_TRACES_EXPORTER: otlp
       OTEL_METRICS_EXPORTER: none

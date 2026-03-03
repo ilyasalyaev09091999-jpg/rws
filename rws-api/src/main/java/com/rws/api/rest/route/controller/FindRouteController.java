@@ -5,11 +5,13 @@ import com.rws.api.rest.route.dto.RouteFinderRequest;
 import com.rws.api.rest.route.dto.RouteFinderResponse;
 import com.rws.api.rest.route.grpcclient.RouteGrpcClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/route")
@@ -26,8 +28,10 @@ public class FindRouteController {
             @RequestParam double endLat,
             @RequestParam LocalDateTime departureTime,
             @RequestParam int speed) throws RouteNotFoundException {
+        log.info("Find route request");
         RouteFinderRequest request = new RouteFinderRequest(startLon, startLat, endLon, endLat, departureTime, speed);
         RouteFinderResponse response = routeGrpcClient.findRoute(request);
+        log.info("Route successfully found: {}", response);
         return ResponseEntity.ok(response);
     }
 }

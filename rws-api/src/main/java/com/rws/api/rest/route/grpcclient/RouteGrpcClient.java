@@ -9,12 +9,14 @@ import com.rws.api.rest.route.dto.RouteFinderResponse;
 import com.rws.api.rest.route.dto.RouteNode;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RouteGrpcClient {
@@ -32,6 +34,7 @@ public class RouteGrpcClient {
                 .setDepartureTime(toTimestamp(request.departureTime()))
                 .setSpeed(request.speed())
                 .build();
+        log.info("Parsed request: {}", protoRequest);
 
         // 2️⃣ Вызов gRPC с обработкой ошибок
         com.route.grpc.RouteFinderResponse protoResponse;
@@ -42,14 +45,23 @@ public class RouteGrpcClient {
 
         } catch (StatusRuntimeException e) {
             switch (e.getStatus().getCode()) {
-                case NOT_FOUND ->
-                        throw new RouteNotFoundException("Route not found");
-                case INVALID_ARGUMENT ->
-                        throw new IllegalArgumentException(e.getStatus().getDescription());
-                case DEADLINE_EXCEEDED ->
-                        throw new RuntimeException("Route service timeout");
-                default ->
-                        throw new RuntimeException("Route service error", e);
+                case NOT_FOUND -> {
+                    log.error("Find route error: NOT_FOUND");
+                    throw new RouteNotFoundException("Route not found");
+                }
+                case INVALID_ARGUMENT -> {
+                    log.error("Find route error: INVALID_ARGUMENT");
+                    throw new IllegalArgumentException(e.getStatus().getDescription());
+                }
+                case DEADLINE_EXCEEDED -> {
+                    log.error("Find route error: DEADLINE_EXCEEDED");
+                    throw new RuntimeException("Route service timeout");
+                }
+                default -> {
+                    log.info("Find route error: UNKNOWN");
+                    throw new RuntimeException("Route service error", e);
+                }
+
             }
         }
 
