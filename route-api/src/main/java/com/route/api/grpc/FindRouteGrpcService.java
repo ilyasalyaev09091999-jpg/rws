@@ -1,4 +1,4 @@
-package com.route.api.grpc;
+﻿package com.route.api.grpc;
 
 import com.google.protobuf.Timestamp;
 import com.route.api.business.core.client.RouteFinderRequest;
@@ -15,16 +15,22 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+/**
+ * gRPC endpoint/адаптер FindRouteGrpcService для взаимодействия с внешними сервисами.
+ */
 @GrpcService
 @RequiredArgsConstructor
 public class FindRouteGrpcService extends RouteServiceGrpc.RouteServiceImplBase {
 
     private final FindRouteManager findRouteManager;
 
+    /**
+     * Выполняет расчет маршрута между исходной и целевой точками.
+     */
     @Override
     public void findRoute(com.route.grpc.RouteFinderRequest request, StreamObserver<com.route.grpc.RouteFinderResponse> responseObserver) {
         try {
-            // 1. Конвертация proto → domain
+            // 1. РљРѕРЅРІРµСЂС‚Р°С†РёСЏ proto в†’ domain
             RouteFinderRequest domainRequest =
                     new RouteFinderRequest(
                             request.getStartLongitude(),
@@ -35,10 +41,10 @@ public class FindRouteGrpcService extends RouteServiceGrpc.RouteServiceImplBase 
                             request.getSpeed()
                     );
 
-            // 2. Вызов бизнес-логики
+            // 2. Р’С‹Р·РѕРІ Р±РёР·РЅРµСЃ-Р»РѕРіРёРєРё
             RouteFinderResponse domainResponse = findRouteManager.findRoute(domainRequest);
 
-            // 3. Конвертация domain → proto
+            // 3. РљРѕРЅРІРµСЂС‚Р°С†РёСЏ domain в†’ proto
             com.route.grpc.RouteFinderResponse protoResponse = mapToProto(domainResponse);
 
             responseObserver.onNext(protoResponse);

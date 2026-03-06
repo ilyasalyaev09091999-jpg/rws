@@ -1,4 +1,4 @@
-package com.geography.importer.access_data.db.jpa.service;
+﻿package com.geography.importer.access_data.db.jpa.service;
 
 import com.geography.importer.access_data.db.jpa.model.NodeEntity;
 import com.geography.importer.access_data.db.jpa.model.WayEntity;
@@ -9,11 +9,14 @@ import com.geography.importer.access_data.db.jpa.repository.WayRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+/**
+ * Сервис доступа к JPA-слою для сохранения импортированных OSM-сущностей.
+ */
 @Service
 @RequiredArgsConstructor
 public class OsmService {
@@ -21,6 +24,10 @@ public class OsmService {
     private final NodeRepository nodeRepository;
     private final WayNodeRepository wayNodeRepository;
 
+    /**
+     * Полностью очищает таблицы импорта в корректном порядке зависимостей:
+     * {@code way_nodes -> ways -> nodes}.
+     */
     @Transactional
     public void clearDatabase() {
         wayNodeRepository.deleteAllInBatch();
@@ -28,19 +35,25 @@ public class OsmService {
         nodeRepository.deleteAllInBatch();
     }
 
-
-
+    /**
+     * Сохраняет батч путей вместе с узлами и связями путь-узел.
+     * <p>
+     * Метод предварительно собирает уникальные {@link NodeEntity},
+     * затем сохраняет ноды, после чего сохраняет {@link WayEntity}
+     * с каскадной записью {@link WayNodeEntity}.
+     * </p>
+     *
+     * @param ways список путей OSM, подготовленных к записи.
+     */
     public void saveWaysBatch(List<WayEntity> ways) {
-        // 1. Собираем все ноды, на которые ссылаются пути
         Set<NodeEntity> allNodes = new HashSet<>();
         for (WayEntity way : ways) {
             for (WayNodeEntity wn : way.getNodes()) {
                 allNodes.add(wn.getNode());
             }
         }
-        // 2. Сохраняем ноды
+
         nodeRepository.saveAll(allNodes);
-        // 3. Сохраняем пути вместе с WayNodeEntity (если cascade = ALL)
         wayRepository.saveAll(ways);
     }
 }

@@ -1,11 +1,14 @@
-package com.refdata.api.domain.entities.rws_api;
+﻿package com.refdata.api.domain.entities.rws_api;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * DTO для сервиса rws-api
+ * DTO порта для gRPC-ответов в адрес {@code rws-api}.
+ * <p>
+ * Содержит внешний набор полей: идентификатор, название и координаты.
+ * </p>
  */
 @Getter
 @Setter
@@ -13,23 +16,23 @@ import lombok.ToString;
 public class PortForRws {
 
     /**
-     * Уникальный ID порта
+     * Уникальный идентификатор порта.
      */
     @ToString.Include
     private String id;
 
     /**
-     * Название порта
+     * Человекочитаемое название порта.
      */
     private String name;
 
     /**
-     * Географическая широта
+     * Географическая широта порта (WGS84).
      */
     private double latitude;
 
     /**
-     * Географическая долгота
+     * Географическая долгота порта (WGS84).
      */
     private double longitude;
 }

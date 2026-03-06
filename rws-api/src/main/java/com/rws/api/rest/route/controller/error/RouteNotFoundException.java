@@ -1,14 +1,17 @@
-package com.rws.api.rest.route.controller.error;
+﻿package com.rws.api.rest.route.controller.error;
 
+/**
+ * Исключение предметной области {@code rws-api}, обозначающее,
+ * что маршрут между заданными точками не найден.
+ */
 public class RouteNotFoundException extends Exception {
 
     /**
-     * Создаёт исключение с сообщением.
+     * Создаёт исключение с человекочитаемым сообщением.
      *
-     * @param message сообщение об ошибке
+     * @param message описание причины ошибки поиска маршрута.
      */
     public RouteNotFoundException(String message) {
         super(message);
     }
-
 }

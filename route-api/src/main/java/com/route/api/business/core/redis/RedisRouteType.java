@@ -1,14 +1,20 @@
-package com.route.api.business.core.redis;
+﻿package com.route.api.business.core.redis;
 
 import com.route.api.business.core.refdata.ports.PortDto;
 
 import java.util.List;
 
+/**
+ * Перечисление стратегий/вариантов: RedisRouteType.
+ */
 public enum RedisRouteType {
     PORT_TO_PORT,
     AD_HOC;
 
 
+    /**
+     * Определяет тип маршрута для выбора стратегии кэширования.
+     */
     public static RedisRouteType defineRouteType(List<PortDto> allPorts, double startLongitude, double startLatitude, double endLongitude,
                                                  double endLatitude) {
         if (allPorts == null || allPorts.isEmpty()) {

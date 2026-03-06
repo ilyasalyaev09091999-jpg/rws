@@ -1,12 +1,14 @@
-package com.refdata.api.access_data.db.jpa.model;
+﻿package com.refdata.api.access_data.db.jpa.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Класс-модель порта для таблицы ports (справочная информация о портах).
+ * JPA-сущность таблицы {@code ports}.
  */
 @Entity
 @Table(name = "ports")
@@ -16,24 +18,24 @@ import lombok.ToString;
 public class PortEntity {
 
     /**
-     * Уникальный ID порта
+     * Первичный ключ порта.
      */
     @Id
     @ToString.Include
     private String id;
 
     /**
-     * Название порта
+     * Название порта.
      */
     private String name;
 
     /**
-     * Географическая широта
+     * Географическая широта (WGS84).
      */
     private double latitude;
 
     /**
-     * Географическая долгота
+     * Географическая долгота (WGS84).
      */
     private double longitude;
 }

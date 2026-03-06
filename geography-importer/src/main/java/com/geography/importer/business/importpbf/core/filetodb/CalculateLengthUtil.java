@@ -1,18 +1,21 @@
-package com.geography.importer.business.importpbf.core.filetodb;
+﻿package com.geography.importer.business.importpbf.core.filetodb;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Геодезические расчёты для этапа импорта.
+ */
 @UtilityClass
 public class CalculateLengthUtil {
 
     /**
-     * Получить расстояние между нодами в метрах
+     * Вычисляет расстояние между двумя координатами по формуле гаверсинуса.
      *
-     * @param lat1 широта 1-й ноды
-     * @param lon1 долгота 1-й ноды
-     * @param lat2 широта 2-й ноды
-     * @param lon2 долгота 2-й ноды
-     * @return расстояние между нодами
+     * @param lat1 широта первой точки.
+     * @param lon1 долгота первой точки.
+     * @param lat2 широта второй точки.
+     * @param lon2 долгота второй точки.
+     * @return расстояние между точками в метрах.
      */
     public double haversine(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000;

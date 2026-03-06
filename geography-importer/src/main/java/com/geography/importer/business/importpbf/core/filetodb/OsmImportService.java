@@ -1,4 +1,4 @@
-package com.geography.importer.business.importpbf.core.filetodb;
+﻿package com.geography.importer.business.importpbf.core.filetodb;
 
 import com.geography.importer.access_data.db.jpa.model.NodeEntity;
 import com.geography.importer.access_data.db.jpa.model.WayEntity;
@@ -26,12 +26,36 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * Сервис импорта навигационных OSM-данных из {@code .osm.pbf} в таблицы БД.
+ * <p>
+ * Алгоритм выполняется в несколько проходов по файлу:
+ * </p>
+ * <ul>
+ *   <li>сбор идентификаторов нод, используемых водными путями;</li>
+ *   <li>загрузка только необходимых нод в память;</li>
+ *   <li>формирование сущностей {@link WayEntity}/{@link WayNodeEntity}
+ *   и пакетная запись в БД.</li>
+ * </ul>
+ * <p>
+ * Обрабатываются только OSM ways с тегом {@code waterway=river|canal}.
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 public class OsmImportService {
 
     private final OsmService osmService;
 
+    /**
+     * Импортирует водные пути из первого найденного файла {@code *.osm.pbf}
+     * в {@code src/main/resources}.
+     * <p>
+     * Метод формирует геометрию нод в SRID 4326 и сохраняет данные батчами.
+     * </p>
+     *
+     * @throws IOException при ошибках чтения файла или директории ресурсов.
+     */
     @Transactional
     public void importWaterways() throws IOException {
         Path osmFile = null;
@@ -150,4 +174,3 @@ public class OsmImportService {
         System.out.println("importWaterways finish");
     }
 }
-

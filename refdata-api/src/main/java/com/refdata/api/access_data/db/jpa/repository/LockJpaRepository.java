@@ -1,4 +1,4 @@
-package com.refdata.api.access_data.db.jpa.repository;
+﻿package com.refdata.api.access_data.db.jpa.repository;
 
 import com.refdata.api.access_data.db.jpa.model.LockEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,11 +8,17 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Spring Data JPA репозиторий для таблицы "шлюзы"
+ * Spring Data JPA-репозиторий для {@link LockEntity}.
  */
 @Repository
 public interface LockJpaRepository extends JpaRepository<LockEntity, String> {
 
+    /**
+     * Загружает все шлюзы вместе с заранее инициализированной коллекцией
+     * {@code nodeIds}.
+     *
+     * @return список сущностей шлюзов с загруженными nodeIds.
+     */
     @Query("""
        select distinct l
        from LockEntity l

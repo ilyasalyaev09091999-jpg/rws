@@ -1,10 +1,16 @@
-package com.route.api.business.core.bbox;
+﻿package com.route.api.business.core.bbox;
 
 import org.springframework.stereotype.Service;
 
+/**
+ * Сервис построения ограничивающего прямоугольника поиска: BBoxCreator.
+ */
 @Service
 public class BBoxCreator {
 
+    /**
+     * Строит ограничивающий прямоугольник для запроса маршрута.
+     */
     public double[] findBBox(double startLat, double startLon, double endLat, double endLon) {
         double buffer = 3;
 

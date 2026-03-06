@@ -1,17 +1,16 @@
-package com.route.api.business.core.client;
+﻿package com.route.api.business.core.client;
 
 import java.time.LocalDateTime;
 
 /**
- * DTO-запрос на базовый расчёт маршрута.
- * Используется для передачи исходных параметров маршрута от UI или внешней системы.
+ * DTO запроса на построение маршрута в {@code route-api}.
  *
- * @param startLongitude Широта точки отправления
- * @param startLatitude Долгота точки отправления
- * @param endLongitude Широта точки отправления
- * @param endLatitude Долгота точки назначения
- * @param departureTime Желаемое время отправления маршрута.
- * @param speed Средняя скорость по маршруту
+ * @param startLongitude долгота точки отправления.
+ * @param startLatitude широта точки отправления.
+ * @param endLongitude долгота точки назначения.
+ * @param endLatitude широта точки назначения.
+ * @param departureTime время отправления, используемое в расчете ETA.
+ * @param speed средняя скорость судна в км/ч.
  */
 public record RouteFinderRequest(
         double startLongitude,

@@ -1,4 +1,4 @@
-package com.route.api.business.core.refdata.client;
+﻿package com.route.api.business.core.refdata.client;
 
 import com.refdata.grpc.*;
 import com.route.api.business.core.refdata.locks.LockDto;
@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * Бизнес-компонент route-api: RefDataGrpcClient.
+ */
 @Slf4j
 @Service("RefDataGrpcClient")
 @RequiredArgsConstructor
@@ -27,13 +30,19 @@ public class RefDataGrpcClient implements RefDataClient {
     private volatile List<LockForRoute> locks = List.of();
     private volatile List<PortForRoute> ports = List.of();
 
+    /**
+     * Выполняет первичную инициализацию данных после старта бина.
+     */
     @PostConstruct
     public void init() {
         refreshLocks();
         refreshPorts();
     }
 
-    @Scheduled(fixedDelay = 10 * 60 * 1000) // каждые 10 минут
+    /**
+     * Обновляет локальный кэш данных, получаемых по gRPC.
+     */
+    @Scheduled(fixedDelay = 10 * 60 * 1000) // РєР°Р¶РґС‹Рµ 10 РјРёРЅСѓС‚
     public synchronized void refreshLocks() {
         try {
             locks = stubLock.getAllLocksForRoute(Empty.newBuilder().build()).getLocksList();
@@ -43,6 +52,9 @@ public class RefDataGrpcClient implements RefDataClient {
         }
     }
 
+    /**
+     * Обновляет локальный кэш данных, получаемых по gRPC.
+     */
     @Scheduled(fixedDelay = 10 * 60 * 1000)
     public synchronized void refreshPorts() {
         try {
@@ -54,6 +66,9 @@ public class RefDataGrpcClient implements RefDataClient {
     }
 
 
+    /**
+     * Возвращает список портов в формате доменных DTO.
+     */
     @Override
     public List<PortDto> getPorts() {
         return ports.stream()
@@ -65,6 +80,9 @@ public class RefDataGrpcClient implements RefDataClient {
     }
 
 
+    /**
+     * Возвращает список шлюзов в формате доменных DTO.
+     */
     @Override
     public List<LockDto> getLocks() {
         return locks.stream()

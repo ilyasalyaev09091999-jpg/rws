@@ -1,4 +1,4 @@
-package com.route.api.business.manager;
+﻿package com.route.api.business.manager;
 
 import com.route.api.access_data.db.jdbc.repository.GraphVersionRepository;
 import com.route.api.access_data.db.jdbc.repository.PgRoutingRepository;
@@ -21,6 +21,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+/**
+ * Координатор бизнес-процесса построения маршрута: FindRouteManager.
+ */
 @Slf4j
 @Service
 public class FindRouteManager {
@@ -34,6 +37,9 @@ public class FindRouteManager {
     private final TimeRouteCalculator routeCalculator;
     private final RedisFindRoute redisFindRoute;
 
+    /**
+     * Создает экземпляр компонента с необходимыми зависимостями.
+     */
     @Autowired
     public FindRouteManager(GraphVersionRepository graphVersionRepository, PgRoutingRepository routingRepository,
                             BBoxCreator bBoxCreator, PrepareRouteResponse prepareRouteResponse,
@@ -49,6 +55,9 @@ public class FindRouteManager {
         this.redisFindRoute = redisFindRoute;
     }
 
+    /**
+     * Выполняет расчет маршрута между исходной и целевой точками.
+     */
     public RouteFinderResponse findRoute(RouteFinderRequest request) throws RouteNotFoundException {
         log.info("Find route request");
 
@@ -58,7 +67,7 @@ public class FindRouteManager {
         Long nodeIdB = routingRepository.findNearestNodeId(request.endLongitude(), request.endLatitude());
         if (nodeIdA == null || nodeIdB == null) {
             log.warn("Node id not found. Node id A: {}, Node id B: {}", nodeIdA, nodeIdB);
-            throw new RouteNotFoundException("Не удалось поостроить маршрут");
+            throw new RouteNotFoundException("РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕРѕСЃС‚СЂРѕРёС‚СЊ РјР°СЂС€СЂСѓС‚");
         }
         log.info("Node id A: {}, Node id B: {}", nodeIdA, nodeIdB);
 
@@ -79,7 +88,7 @@ public class FindRouteManager {
         if (route == null || route.isEmpty()) {
             log.warn("Route not found. start=({}, {}), end=({}, {}), departureTime={}",
                     request.startLatitude(), request.startLongitude(), request.endLatitude(), request.startLongitude(), request.departureTime());
-            throw new RouteNotFoundException("Не удалось поостроить маршрут");
+            throw new RouteNotFoundException("РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕРѕСЃС‚СЂРѕРёС‚СЊ РјР°СЂС€СЂСѓС‚");
         }
 
         List<LockDto> allLocks = refDataClient.getLocks();

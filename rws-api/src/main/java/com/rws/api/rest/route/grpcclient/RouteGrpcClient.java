@@ -1,4 +1,4 @@
-package com.rws.api.rest.route.grpcclient;
+﻿package com.rws.api.rest.route.grpcclient;
 
 import com.google.protobuf.Timestamp;
 import com.route.grpc.RouteServiceGrpc;
@@ -12,10 +12,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * gRPC-клиент для обращения к сервису {@code route-api} из {@code rws-api}.
+ * <p>
+ * Отвечает за:
+ * </p>
+ * <ul>
+ *   <li>преобразование REST DTO в protobuf-запрос;</li>
+ *   <li>выполнение gRPC-вызова с deadline;</li>
+ *   <li>маппинг protobuf-ответа в REST DTO;</li>
+ *   <li>трансляцию gRPC-ошибок в исключения уровня {@code rws-api}.</li>
+ * </ul>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,8 +37,18 @@ public class RouteGrpcClient {
     @GrpcClient("route")
     private RouteServiceGrpc.RouteServiceBlockingStub stub;
 
+    /**
+     * Вызывает удалённый расчёт маршрута в {@code route-api}.
+     *
+     * @param request входной запрос на поиск маршрута.
+     * @return рассчитанный маршрут в REST-представлении.
+     * @throws RouteNotFoundException если удалённый сервис вернул статус
+     *                                {@code NOT_FOUND}.
+     * @throws IllegalArgumentException если удалённый сервис вернул
+     *                                  {@code INVALID_ARGUMENT}.
+     * @throws RuntimeException при таймауте или прочей ошибке gRPC.
+     */
     public RouteFinderResponse findRoute(RouteFinderRequest request) throws RouteNotFoundException {
-        // 1️⃣ REST DTO → Proto
         com.route.grpc.RouteFinderRequest protoRequest = com.route.grpc.RouteFinderRequest.newBuilder()
                 .setStartLongitude(request.startLongitude())
                 .setStartLatitude(request.startLatitude())
@@ -36,7 +59,6 @@ public class RouteGrpcClient {
                 .build();
         log.info("Parsed request: {}", protoRequest);
 
-        // 2️⃣ Вызов gRPC с обработкой ошибок
         com.route.grpc.RouteFinderResponse protoResponse;
         try {
             protoResponse = stub
@@ -65,7 +87,6 @@ public class RouteGrpcClient {
             }
         }
 
-        // 3️⃣ Proto → REST DTO
         return mapFromProto(protoResponse);
     }
 

@@ -1,4 +1,4 @@
-package com.route.api.config;
+﻿package com.route.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,15 +10,24 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Конфигурация Redis-кэширования для маршрутов в {@code route-api}.
+ * <p>
+ * Сервис разделяет кэши на два типа:
+ * </p>
+ * <ul>
+ *   <li>{@code route-port-port} — стабильные маршруты между портами
+ *   с более длинным TTL;</li>
+ *   <li>{@code route-ad-hoc} — произвольные маршруты с коротким TTL.</li>
+ * </ul>
+ */
 @Configuration
 public class RedisConfig {
 
     /**
-     * «Кэширование маршрутов осуществляется с учётом их повторяемости и семантической значимости.
-     * Наиболее устойчивыми являются маршруты между портами, в то время как маршруты с произвольными
-     * точками назначения не подлежат долговременному хранению.»
+     * Базовая Redis-конфигурация кэша по умолчанию.
      *
-     * @return конфигурация Redis
+     * @return конфигурация с TTL 1 день и отключенным кэшированием null.
      */
     @Bean
     public RedisCacheConfiguration cacheConfiguration() {
@@ -27,7 +36,11 @@ public class RedisConfig {
                 .disableCachingNullValues();
     }
 
-
+    /**
+     * Конфигурация кэша маршрутов между портами.
+     *
+     * @return конфигурация с TTL 14 дней.
+     */
     @Bean
     public RedisCacheConfiguration portToPortCacheConfig() {
         return RedisCacheConfiguration.defaultCacheConfig()
@@ -35,6 +48,11 @@ public class RedisConfig {
                 .disableCachingNullValues();
     }
 
+    /**
+     * Конфигурация кэша произвольных маршрутов.
+     *
+     * @return конфигурация с TTL 3 дня.
+     */
     @Bean
     public RedisCacheConfiguration adHocCacheConfig() {
         return RedisCacheConfiguration.defaultCacheConfig()
@@ -42,6 +60,12 @@ public class RedisConfig {
                 .disableCachingNullValues();
     }
 
+    /**
+     * Создаёт {@link RedisCacheManager} с именованными конфигурациями кэша.
+     *
+     * @param redisConnectionFactory фабрика Redis-соединений.
+     * @return менеджер кэшей route-api.
+     */
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
         Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
@@ -52,6 +76,4 @@ public class RedisConfig {
                 .withInitialCacheConfigurations(cacheConfigs)
                 .build();
     }
-
-
 }

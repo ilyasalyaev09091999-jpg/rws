@@ -1,4 +1,4 @@
-package com.refdata.api.access_data.db.jpa.service;
+﻿package com.refdata.api.access_data.db.jpa.service;
 
 import com.refdata.api.access_data.db.jpa.model.PortEntity;
 import com.refdata.api.access_data.db.jpa.repository.PortJpaRepository;
@@ -9,10 +9,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 /**
- * Сервис для работы с данными "порты" через Spring Data JPA
+ * JPA-реализация {@link PortService}.
+ * <p>
+ * Читает единый источник справочных данных ({@code ports}) и проецирует его
+ * в две DTO-модели под разные gRPC-контракты:
+ * </p>
+ * <ul>
+ *   <li>для {@code rws-api},</li>
+ *   <li>для {@code route-api}.</li>
+ * </ul>
  */
 @Slf4j
 @Service("PortJpaService")
@@ -22,13 +31,20 @@ public class PortJpaService implements PortService {
     private final PortJpaRepository repository;
     private final ModelMapper modelMapper;
 
+    /**
+     * Возвращает все порты в проекции {@link PortForRws}.
+     */
+    @Override
     public List<PortForRws> getAllLocksForRws() {
         List<PortEntity> entities = repository.findAll();
         log.info("Found ports for rws count: {}", entities.size());
         return entities.stream().map(e -> modelMapper.map(e, PortForRws.class)).toList();
     }
 
-
+    /**
+     * Возвращает все порты в проекции {@link PortForRoute}.
+     */
+    @Override
     public List<PortForRoute> getAllPortsForRoute() {
         List<PortEntity> entities = repository.findAll();
         log.info("Found ports for route count: {}", entities.size());

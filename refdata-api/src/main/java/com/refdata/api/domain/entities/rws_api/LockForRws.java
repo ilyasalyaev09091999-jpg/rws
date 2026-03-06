@@ -1,11 +1,14 @@
-package com.refdata.api.domain.entities.rws_api;
+﻿package com.refdata.api.domain.entities.rws_api;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 /**
- * DTO для сервиса rws-api
+ * DTO шлюза для gRPC-ответов в адрес {@code rws-api}.
+ * <p>
+ * Содержит пользовательские поля: идентификатор, название и координаты.
+ * </p>
  */
 @Getter
 @Setter
@@ -13,23 +16,23 @@ import lombok.ToString;
 public class LockForRws {
 
     /**
-     * Уникальный идентификатор шлюза
+     * Уникальный идентификатор шлюза.
      */
     @ToString.Include
     private String id;
 
     /**
-     * Название (например, «Шлюз №15 Волго-Дона»)
+     * Название шлюза.
      */
     private String name;
 
     /**
-     * Широта
+     * Географическая широта шлюза (WGS84).
      */
     private double latitude;
 
     /**
-     * Долгота
+     * Географическая долгота шлюза (WGS84).
      */
     private double longitude;
 }

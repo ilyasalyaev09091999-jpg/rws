@@ -1,6 +1,12 @@
-package com.refdata.api.access_data.db.jpa.model;
+﻿package com.refdata.api.access_data.db.jpa.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Класс-модель для таблицы locks (справочная информация о шлюзах)
+ * JPA-сущность таблицы {@code locks}.
  */
 @Entity
 @Table(name = "locks")
@@ -19,30 +25,29 @@ import java.util.Set;
 public class LockEntity {
 
     /**
-     * Уникальный идентификатор шлюза
+     * Первичный ключ шлюза.
      */
     @Id
     @ToString.Include
     private String id;
 
     /**
-     * Название (например, «Шлюз №15 Волго-Дона»)
+     * Название шлюза.
      */
     private String name;
 
     /**
-     * Широта
+     * Географическая широта (WGS84).
      */
     private double latitude;
 
     /**
-     * Долгота
+     * Географическая долгота (WGS84).
      */
     private double longitude;
 
     /**
-     * Узлы графа, принадлежащие шлюзу
-     * (вход, выход, возможные альтернативные камеры)
+     * Идентификаторы узлов графа, связанных со шлюзом (таблица {@code lock_nodes}).
      */
     @ElementCollection
     @CollectionTable(
