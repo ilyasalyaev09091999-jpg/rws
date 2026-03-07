@@ -1,4 +1,4 @@
-﻿server:
+server:
   port: 8083
 
 grpc:
@@ -9,6 +9,9 @@ grpc:
     route:
       address: ${GRPC_ROUTE_ADDRESS}
       enableKeepAlive: true
+      negotiationType: PLAINTEXT
+    archive:
+      address: ${GRPC_ARCHIVE_ADDRESS:dns:///localhost:8094}
       negotiationType: PLAINTEXT
 
 spring:
@@ -27,7 +30,3 @@ management:
     export:
       prometheus:
         enabled: true
-
-archive:
-  api:
-    base-url: ${ARCHIVE_API_BASE_URL:http://localhost:8084}

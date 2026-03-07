@@ -1,10 +1,11 @@
-﻿server:
+server:
   port: 8084
 
 grpc:
   server:
     port: 8094
     address: 0.0.0.0
+    max-inbound-message-size: ${GRPC_SERVER_MAX_INBOUND_MESSAGE_SIZE:52428800}
 
 spring:
   datasource:

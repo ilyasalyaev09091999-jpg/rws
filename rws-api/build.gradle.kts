@@ -23,6 +23,7 @@ dependencies {
     // gRPC
     implementation(project(":refdata-proto"))
     implementation(project(":route-proto"))
+    implementation(project(":archive-proto"))
     implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
 
     compileOnly("org.projectlombok:lombok:1.18.32")

@@ -30,5 +30,9 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
 
     implementation("io.micrometer:micrometer-registry-prometheus")
+
+    implementation(project(":archive-proto"))
+    implementation("io.grpc:grpc-netty-shaded:1.75.0")
+    implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 }

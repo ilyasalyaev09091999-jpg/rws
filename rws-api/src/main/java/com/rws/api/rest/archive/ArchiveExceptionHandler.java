@@ -1,10 +1,10 @@
 package com.rws.api.rest.archive;
 
+import com.rws.api.rest.archive.client.ArchiveApiUnavailableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
 
@@ -16,8 +16,8 @@ public class ArchiveExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
     }
 
-    @ExceptionHandler(RestClientException.class)
-    public ResponseEntity<Map<String, String>> handleArchiveApiUnavailable(RestClientException ex) {
+    @ExceptionHandler(ArchiveApiUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handleArchiveApiUnavailable(ArchiveApiUnavailableException ex) {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body(Map.of("message", "Archive API unavailable", "detail", ex.getMessage()));
     }

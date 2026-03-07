@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package archive;
+
+option java_multiple_files = true;
+option java_package = "com.archive.grpc";
+option java_outer_classname = "ArchiveProto";
+
+service ArchiveService {
+  rpc ImportXlsx(ArchiveImportXlsxRequest) returns (ArchiveImportResultResponse);
+  rpc SearchTrips(ArchiveSearchRequest) returns (ArchiveTripSearchResponse);
+  rpc GetRouteStats(ArchiveAnalyticsRequest) returns (ArchiveRouteStatsResponse);
+}
+
+message ArchiveImportXlsxRequest {
+  string file_name = 1;
+  bytes content = 2;
+}
+
+message ArchiveImportResultResponse {
+  string file_name = 1;
+  int32 total_rows = 2;
+  int32 imported_rows = 3;
+  int32 skipped_rows = 4;
+  int32 error_rows = 5;
+}
+
+message ArchiveSearchRequest {
+  string departure_point = 1;
+  string destination_point = 2;
+  string date_from = 3;
+  string date_to = 4;
+  int32 page = 5;
+  int32 size = 6;
+}
+
+message ArchiveTripItem {
+  optional int64 id = 1;
+  string voyage_name = 2;
+  string trip_type = 3;
+  string tug_name = 4;
+  string departure_point = 5;
+  string destination_point = 6;
+  string departure_date = 7;
+  string arrival_date = 8;
+  optional int32 duration_days = 9;
+  string cargo_type = 10;
+  string cargo_amount = 11;
+  string draft_m = 12;
+  string counterparty_name = 13;
+  string counterparty_inn = 14;
+  string flag = 15;
+  optional int32 units_count = 16;
+  string region_from = 17;
+  string region_to = 18;
+}
+
+message ArchiveTripSearchResponse {
+  repeated ArchiveTripItem items = 1;
+  int32 page = 2;
+  int32 size = 3;
+  int64 total_elements = 4;
+  int32 total_pages = 5;
+}
+
+message ArchiveAnalyticsRequest {
+  string departure_point = 1;
+  string destination_point = 2;
+  int32 month = 3;
+}
+
+message ArchiveRouteStatsItem {
+  string departure_point = 1;
+  string destination_point = 2;
+  int32 departure_month = 3;
+  int64 trips_count = 4;
+  int32 min_days = 5;
+  int32 max_days = 6;
+  string avg_days = 7;
+  string p50_days = 8;
+  string p80_days = 9;
+  string uncertainty_days = 10;
+}
+
+message ArchiveRouteStatsResponse {
+  repeated ArchiveRouteStatsItem items = 1;
+}

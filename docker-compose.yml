@@ -1,4 +1,4 @@
-﻿services:
+services:
   redis:
     image: redis:7.0
     container_name: redis-route
@@ -167,7 +167,7 @@
     environment:
       GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
       GRPC_ROUTE_ADDRESS: dns:///route-api:8090
-      ARCHIVE_API_BASE_URL: http://archive-api:8084
+      GRPC_ARCHIVE_ADDRESS: dns:///archive-api:8094
       OTEL_SERVICE_NAME: rws-api
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
