@@ -1,4 +1,4 @@
-﻿package com.route.api.grpc;
+package com.route.api.grpc;
 
 import com.google.protobuf.Timestamp;
 import com.route.api.business.core.client.RouteFinderRequest;

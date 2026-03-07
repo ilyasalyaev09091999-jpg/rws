@@ -1,4 +1,4 @@
-﻿package com.route.api.business.manager;
+package com.route.api.business.manager;
 
 import com.route.api.access_data.db.jdbc.repository.GraphVersionRepository;
 import com.route.api.access_data.db.jdbc.repository.PgRoutingRepository;

@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.route.controller;
+package com.rws.api.rest.route.controller;
 
 import com.rws.api.rest.route.controller.error.RouteNotFoundException;
 import com.rws.api.rest.route.dto.RouteFinderRequest;

@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.locks;
+package com.rws.api.rest.locks;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.route.controller.error;
+package com.rws.api.rest.route.controller.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

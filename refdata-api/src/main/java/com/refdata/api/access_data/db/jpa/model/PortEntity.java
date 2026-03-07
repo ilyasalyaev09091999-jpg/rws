@@ -1,4 +1,4 @@
-﻿package com.refdata.api.access_data.db.jpa.model;
+package com.refdata.api.access_data.db.jpa.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

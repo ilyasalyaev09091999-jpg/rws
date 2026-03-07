@@ -1,4 +1,4 @@
-﻿package com.route.api.business.core.util;
+package com.route.api.business.core.util;
 
 /**
  * Географические утилиты для расчетов метрик маршрута.

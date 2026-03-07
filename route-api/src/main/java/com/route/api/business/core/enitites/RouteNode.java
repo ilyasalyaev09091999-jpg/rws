@@ -1,4 +1,4 @@
-﻿package com.route.api.business.core.enitites;
+package com.route.api.business.core.enitites;
 
 import java.io.Serializable;
 

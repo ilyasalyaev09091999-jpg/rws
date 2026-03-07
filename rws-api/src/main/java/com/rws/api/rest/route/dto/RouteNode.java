@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.route.dto;
+package com.rws.api.rest.route.dto;
 
 import java.io.Serializable;
 

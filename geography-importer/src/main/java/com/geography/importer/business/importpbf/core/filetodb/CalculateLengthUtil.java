@@ -1,4 +1,4 @@
-﻿package com.geography.importer.business.importpbf.core.filetodb;
+package com.geography.importer.business.importpbf.core.filetodb;
 
 import lombok.experimental.UtilityClass;
 

@@ -1,4 +1,4 @@
-﻿package com.geography.importer.business.importpbf.core.filetodb;
+package com.geography.importer.business.importpbf.core.filetodb;
 
 import com.geography.importer.access_data.db.jpa.model.NodeEntity;
 import com.geography.importer.access_data.db.jpa.model.WayEntity;

@@ -1,4 +1,4 @@
-services:
+﻿services:
   redis:
     image: redis:7.0
     container_name: redis-route
@@ -81,6 +81,32 @@ services:
     depends_on:
       - refdata-postgres
 
+  archive-postgres:
+    image: postgres:16
+    container_name: archive-postgres
+    environment:
+      POSTGRES_USER: archive
+      POSTGRES_PASSWORD: archive
+      POSTGRES_DB: archive
+    volumes:
+      - ./infrastructure/databases/archive:/docker-entrypoint-initdb.d:ro
+      - archive_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U archive -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  archive-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: archive-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://archive:archive@archive-postgres:5432/archive?sslmode=disable"
+    depends_on:
+      - archive-postgres
+
   refdata-api:
     build:
       context: .
@@ -96,11 +122,13 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TIMEOUT: 30000
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
     depends_on:
       - refdata-postgres
       - redis
+      - tempo
 
   route-api:
     build:
@@ -120,12 +148,14 @@ services:
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TIMEOUT: 30000
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
     depends_on:
       - geography-postgres
       - redis
       - refdata-api
+      - tempo
 
   rws-api:
     build:
@@ -137,15 +167,42 @@ services:
     environment:
       GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
       GRPC_ROUTE_ADDRESS: dns:///route-api:8090
+      ARCHIVE_API_BASE_URL: http://archive-api:8084
       OTEL_SERVICE_NAME: rws-api
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TIMEOUT: 30000
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
     depends_on:
       - route-api
       - refdata-api
+      - archive-api
+      - tempo
+
+  archive-api:
+    build:
+      context: .
+      dockerfile: archive-api/Dockerfile
+    container_name: archive-api
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://archive-postgres:5432/archive
+      SPRING_DATASOURCE_USERNAME: archive
+      SPRING_DATASOURCE_PASSWORD: archive
+      OTEL_SERVICE_NAME: archive-api
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TIMEOUT: 30000
+      OTEL_METRICS_EXPORTER: none
+      OTEL_LOGS_EXPORTER: none
+    depends_on:
+      - archive-postgres
+      - redis
+      - tempo
 
   prometheus:
     image: prom/prometheus:v2.52.0
@@ -209,6 +266,11 @@ volumes:
     external: true
   d11928472a7d52d2765187b85dac43abe25a6cf8ab94d7b47d148eba5378adc8:
     external: true
+  archive_postgres_data:
   redis_data:
   grafana_data:
   tempo_data:
+
+
+
+

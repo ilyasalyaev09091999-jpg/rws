@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.locks;
+package com.rws.api.rest.locks;
 
 import com.rws.api.cache.LockCacheService;
 import lombok.RequiredArgsConstructor;

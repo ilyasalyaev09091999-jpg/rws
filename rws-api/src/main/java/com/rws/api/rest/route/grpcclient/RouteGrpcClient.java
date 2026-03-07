@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.route.grpcclient;
+package com.rws.api.rest.route.grpcclient;
 
 import com.google.protobuf.Timestamp;
 import com.route.grpc.RouteServiceGrpc;

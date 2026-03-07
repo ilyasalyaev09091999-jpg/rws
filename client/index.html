@@ -1,12 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <title>Карта портов</title>
-    <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <title>Routing Waterway System</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         html, body {
             height: 100%;
@@ -27,28 +24,58 @@
 
         #sidebar {
             flex: 1;
-            min-width: 300px;
-            background: #fff; /* белая форма */
+            min-width: 360px;
+            background: #fff;
             border-left: 1px solid #ccc;
-            padding: 20px;
+            padding: 16px;
             box-sizing: border-box;
             overflow-y: auto;
-            box-shadow: -3px 0 8px rgba(0,0,0,0.05); /* лёгкая тень */
-            display: flex;
-            flex-direction: column;
+            box-shadow: -3px 0 8px rgba(0, 0, 0, 0.05);
         }
 
-        #sidebar h2 {
-            text-align: center;
-            margin-bottom: 20px;
+        .tab-menu {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: 1px solid #cfd4da;
+            background: #f7f8fa;
             color: #333;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tab-btn.active {
+            background: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        h2 {
+            margin: 0 0 14px 0;
+            font-size: 18px;
+            color: #222;
         }
 
         fieldset {
             border: 1px solid #ddd;
             border-radius: 8px;
-            padding: 15px 10px 10px 10px;
-            margin-bottom: 15px;
+            padding: 12px 10px;
+            margin-bottom: 12px;
         }
 
         legend {
@@ -63,30 +90,41 @@
             margin-bottom: 10px;
         }
 
+        .field-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .field-row .field-block {
+            flex: 1;
+        }
+
         label {
-            font-size: 14px;
+            font-size: 13px;
             color: #555;
             margin-bottom: 5px;
         }
 
         input[type="text"],
         input[type="number"],
-        input[type="datetime-local"] {
+        input[type="datetime-local"],
+        input[type="date"] {
+            width: 100%;
+            box-sizing: border-box;
             padding: 8px 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 14px;
-            transition: 0.2s;
         }
 
         input:focus {
             border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
             outline: none;
         }
 
         button {
-            padding: 10px 15px;
+            padding: 10px 12px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -94,103 +132,230 @@
             transition: 0.2s;
         }
 
-        #calculateBtn {
-            background-color: #007bff;
+        #calculateBtn,
+        #archiveSearchBtn,
+        #archivePrevPage,
+        #archiveNextPage {
+            background: #007bff;
             color: #fff;
-            margin-right: 10px;
         }
 
-        #calculateBtn:hover {
-            background-color: #0056b3;
+        #calculateBtn:hover,
+        #archiveSearchBtn:hover,
+        #archivePrevPage:hover,
+        #archiveNextPage:hover {
+            background: #0056b3;
         }
 
-        #clearPoints {
-            background-color: #6c757d;
+        #clearPoints,
+        #archiveClearBtn {
+            background: #6c757d;
             color: #fff;
-            margin-top: 8px;
         }
 
-        #clearPoints:hover {
-            background-color: #5a6268;
+        #clearPoints:hover,
+        #archiveClearBtn:hover {
+            background: #5a6268;
         }
 
-        #routeResult {
-            margin-top: 15px;
+        #routeResult,
+        #archiveSummary {
+            margin-top: 10px;
             padding: 10px;
             background: #e9ecef;
             border-radius: 6px;
-            min-height: 40px;
+            min-height: 24px;
             color: #333;
             font-size: 14px;
         }
 
-    </style>
+        .table-wrap {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 220px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: #fff;
+            margin-top: 10px;
+        }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th, td {
+            border-bottom: 1px solid #ececec;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            z-index: 1;
+        }
+
+        .archive-pagination {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .archive-pagination span {
+            font-size: 12px;
+            color: #444;
+        }
+    </style>
 </head>
 <body>
 <div id="map"></div>
+
 <div id="sidebar">
-    <h2>Расчёт маршрута</h2>
+    <div class="tab-menu">
+        <button id="tabRoute" class="tab-btn active" type="button">Route planner</button>
+        <button id="tabArchive" class="tab-btn" type="button">Archive routes</button>
+    </div>
 
-    <form id="routeForm">
-        <fieldset>
-            <legend>Координата A</legend>
+    <section id="routePanel" class="tab-panel active">
+        <h2>Расчёт маршрута</h2>
+        <form id="routeForm">
+            <fieldset>
+                <legend>Координата A</legend>
+                <div class="field-block">
+                    <label>Долгота:
+                        <input id="startLon" type="text" />
+                    </label>
+                </div>
+                <div class="field-block">
+                    <label>Широта:
+                        <input id="startLat" type="text" />
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Координата B</legend>
+                <div class="field-block">
+                    <label>Долгота:
+                        <input id="endLon" type="text" />
+                    </label>
+                </div>
+                <div class="field-block">
+                    <label>Широта:
+                        <input id="endLat" type="text" />
+                    </label>
+                </div>
+            </fieldset>
+
             <div class="field-block">
-                <label>Долгота:
-                    <input id="startLon" type="text" />
+                <label>Время отправления:
+                    <input type="datetime-local" id="departureTime" />
                 </label>
             </div>
+
             <div class="field-block">
-                <label>Широта:
-                    <input id="startLat" type="text" />
+                <label>Скорость (км/ч):
+                    <input type="number" id="speed" min="1" value="12" />
                 </label>
             </div>
-        </fieldset>
 
-        <fieldset>
-            <legend>Координата B</legend>
             <div class="field-block">
-                <label>Долгота:
-                    <input id="endLon" type="text" />
-                </label>
+                <button type="submit" id="calculateBtn">Рассчитать маршрут</button>
+                <button id="clearPoints" type="button" style="margin-top: 8px;">Очистить точки</button>
             </div>
-            <div class="field-block">
-                <label>Широта:
-                    <input id="endLat" type="text" />
-                </label>
+
+            <div id="progressContainer" style="display:none; margin-top:10px;">
+                <div id="progressBar" style="width:0%; height:8px; background:#007bff; border-radius:4px; transition: width 0.3s;"></div>
             </div>
-        </fieldset>
 
-        <div class="field-block">
-            <label>Время отправления:
-                <input type="datetime-local" id="departureTime" />
-            </label>
+            <div id="routeResult"></div>
+        </form>
+    </section>
+
+    <section id="archivePanel" class="tab-panel">
+        <h2>Архив рейсов</h2>
+        <form id="archiveSearchForm">
+            <div class="field-row">
+                <div class="field-block">
+                    <label>Город отправления
+                        <input id="archiveFromCity" type="text" placeholder="Например, Нижний Новгород" />
+                    </label>
+                </div>
+                <div class="field-block">
+                    <label>Город прибытия
+                        <input id="archiveToCity" type="text" placeholder="Например, Казань" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-block">
+                    <label>Дата отправления от
+                        <input id="archiveDateFrom" type="date" />
+                    </label>
+                </div>
+                <div class="field-block">
+                    <label>Дата отправления до
+                        <input id="archiveDateTo" type="date" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <button id="archiveSearchBtn" type="submit">Найти рейсы</button>
+                <button id="archiveClearBtn" type="button">Сбросить</button>
+            </div>
+        </form>
+
+        <div id="archiveSummary">Введите фильтры и нажмите «Найти рейсы».</div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Откуда</th>
+                    <th>Куда</th>
+                    <th>Отправление</th>
+                    <th>Прибытие</th>
+                    <th>Дней</th>
+                </tr>
+                </thead>
+                <tbody id="archiveTripsBody">
+                <tr><td colspan="6">Нет данных</td></tr>
+                </tbody>
+            </table>
         </div>
 
-        <div class="field-block">
-            <label>Скорость (км/ч):
-                <input type="number" id="speed" min="1" value="12" />
-            </label>
+        <div class="archive-pagination">
+            <button id="archivePrevPage" type="button">←</button>
+            <span id="archivePaginationInfo">Страница 1</span>
+            <button id="archiveNextPage" type="button">→</button>
         </div>
 
-        <div class="field-block">
-            <button type="submit" id="calculateBtn">Рассчитать маршрут</button>
-            <button id="clearPoints" type="button" style="margin-top: 8px;">
-                Очистить точки
-            </button>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Маршрут</th>
+                    <th>Месяц</th>
+                    <th>Рейсов</th>
+                    <th>P50 (дн)</th>
+                    <th>P80 (дн)</th>
+                    <th>Диапазон</th>
+                </tr>
+                </thead>
+                <tbody id="archiveStatsBody">
+                <tr><td colspan="6">Нет статистики</td></tr>
+                </tbody>
+            </table>
         </div>
-
-        <div id="progressContainer" style="display:none; margin-top:10px;">
-            <div id="progressBar" style="
-        width:0%;
-        height:8px;
-        background-color:#007bff;
-        border-radius:4px;
-        transition: width 0.3s;
-    "></div>
-        </div>
-        <div id="routeResult"></div>
-    </form>
+    </section>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

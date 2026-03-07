@@ -1,4 +1,4 @@
-﻿package com.geography.importer.access_data.db.jpa.repository;
+package com.geography.importer.access_data.db.jpa.repository;
 
 import com.geography.importer.access_data.db.jpa.model.WayEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

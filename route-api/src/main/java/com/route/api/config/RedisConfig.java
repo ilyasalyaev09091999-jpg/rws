@@ -1,4 +1,4 @@
-﻿package com.route.api.config;
+package com.route.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

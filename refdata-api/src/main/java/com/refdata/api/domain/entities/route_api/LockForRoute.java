@@ -1,4 +1,4 @@
-﻿package com.refdata.api.domain.entities.route_api;
+package com.refdata.api.domain.entities.route_api;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-﻿package com.geography.importer.business.importpbf.manager;
+package com.geography.importer.business.importpbf.manager;
 
 import com.geography.importer.business.importpbf.core.filetodb.OsmImportService;
 import com.geography.importer.business.importpbf.core.grafbuilder.GraphBuilderService;

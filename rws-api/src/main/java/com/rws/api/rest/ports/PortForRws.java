@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.ports;
+package com.rws.api.rest.ports;
 
 import lombok.Getter;
 import lombok.Setter;

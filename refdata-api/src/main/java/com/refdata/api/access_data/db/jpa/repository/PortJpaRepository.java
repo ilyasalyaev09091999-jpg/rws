@@ -1,4 +1,4 @@
-﻿package com.refdata.api.access_data.db.jpa.repository;
+package com.refdata.api.access_data.db.jpa.repository;
 
 import com.refdata.api.access_data.db.jpa.model.PortEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

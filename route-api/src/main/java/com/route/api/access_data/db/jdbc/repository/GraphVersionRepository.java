@@ -1,4 +1,4 @@
-﻿package com.route.api.access_data.db.jdbc.repository;
+package com.route.api.access_data.db.jdbc.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;

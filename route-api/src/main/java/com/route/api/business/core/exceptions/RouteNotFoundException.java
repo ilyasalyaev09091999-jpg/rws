@@ -1,4 +1,4 @@
-﻿package com.route.api.business.core.exceptions;
+package com.route.api.business.core.exceptions;
 
 /**
  * Исключение, сигнализирующее, что маршрут между заданными точками не найден.

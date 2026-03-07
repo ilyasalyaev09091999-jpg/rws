@@ -1,4 +1,4 @@
-﻿package com.refdata.api.config;
+package com.refdata.api.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

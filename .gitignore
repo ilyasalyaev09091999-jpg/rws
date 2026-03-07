@@ -17,3 +17,6 @@ target/
 /.mvn
 /build
 /.gradle
+# Local Gradle cache and module build outputs
+/.gradle-local/
+**/build/

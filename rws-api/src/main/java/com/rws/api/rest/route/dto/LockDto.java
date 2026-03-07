@@ -1,4 +1,4 @@
-﻿package com.rws.api.rest.route.dto;
+package com.rws.api.rest.route.dto;
 
 /**
  * Минимальное REST-представление шлюза на маршруте.

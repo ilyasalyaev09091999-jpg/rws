@@ -1,4 +1,4 @@
-server:
+﻿server:
   port: 8083
 
 grpc:
@@ -11,6 +11,12 @@ grpc:
       enableKeepAlive: true
       negotiationType: PLAINTEXT
 
+spring:
+  servlet:
+    multipart:
+      max-file-size: ${SPRING_MULTIPART_MAX_FILE_SIZE:50MB}
+      max-request-size: ${SPRING_MULTIPART_MAX_REQUEST_SIZE:50MB}
+
 management:
   endpoints:
     web:
@@ -21,3 +27,7 @@ management:
     export:
       prometheus:
         enabled: true
+
+archive:
+  api:
+    base-url: ${ARCHIVE_API_BASE_URL:http://localhost:8084}

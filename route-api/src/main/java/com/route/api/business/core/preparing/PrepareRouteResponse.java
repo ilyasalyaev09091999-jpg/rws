@@ -1,4 +1,4 @@
-﻿package com.route.api.business.core.preparing;
+package com.route.api.business.core.preparing;
 
 import com.route.api.business.core.enitites.RouteNode;
 import com.route.api.business.core.refdata.locks.LockDto;

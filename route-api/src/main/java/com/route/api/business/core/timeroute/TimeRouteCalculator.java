@@ -1,4 +1,4 @@
-﻿package com.route.api.business.core.timeroute;
+package com.route.api.business.core.timeroute;
 
 import com.route.api.business.core.enitites.RouteNode;
 import com.route.api.business.core.util.GeographyUtil;

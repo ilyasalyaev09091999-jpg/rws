@@ -349,3 +349,230 @@ document.getElementById('endLat').addEventListener('input', () => {
         }
     }
 });
+// Archive UI
+const ARCHIVE_API_BASE = 'http://localhost:8083';
+let archivePage = 0;
+let archiveTotalPages = 0;
+
+function archiveBuildQuery(baseParams) {
+    const params = new URLSearchParams();
+    Object.entries(baseParams).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && String(value).trim() !== '') {
+            params.set(key, String(value).trim());
+        }
+    });
+    return params;
+}
+
+function archiveReadFilters() {
+    return {
+        departurePoint: document.getElementById('archiveFromCity')?.value || '',
+        destinationPoint: document.getElementById('archiveToCity')?.value || '',
+        dateFrom: document.getElementById('archiveDateFrom')?.value || '',
+        dateTo: document.getElementById('archiveDateTo')?.value || ''
+    };
+}
+
+async function archiveFetchTrips(page = 0) {
+    const filters = archiveReadFilters();
+    const params = archiveBuildQuery({ ...filters, page, size: 20 });
+    const response = await fetch(`${ARCHIVE_API_BASE}/api/archive/search?${params.toString()}`);
+
+    if (!response.ok) {
+        throw new Error('Archive search request failed');
+    }
+
+    return response.json();
+}
+
+async function archiveFetchStats() {
+    const filters = archiveReadFilters();
+    const params = archiveBuildQuery({
+        departurePoint: filters.departurePoint,
+        destinationPoint: filters.destinationPoint
+    });
+    const response = await fetch(`${ARCHIVE_API_BASE}/api/archive/analytics?${params.toString()}`);
+
+    if (!response.ok) {
+        throw new Error('Archive analytics request failed');
+    }
+
+    return response.json();
+}
+
+function archiveRenderTrips(data) {
+    const tbody = document.getElementById('archiveTripsBody');
+    const summary = document.getElementById('archiveSummary');
+    const paginationInfo = document.getElementById('archivePaginationInfo');
+    const prevBtn = document.getElementById('archivePrevPage');
+    const nextBtn = document.getElementById('archiveNextPage');
+
+    if (!tbody || !summary || !paginationInfo || !prevBtn || !nextBtn) {
+        return;
+    }
+
+    const items = data.items || [];
+    if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="6">Нет данных</td></tr>';
+    } else {
+        tbody.innerHTML = items.map((trip) => `
+            <tr>
+                <td>${trip.id ?? ''}</td>
+                <td>${trip.departurePoint ?? trip.fromCity ?? ''}</td>
+                <td>${trip.destinationPoint ?? trip.toCity ?? ''}</td>
+                <td>${trip.departureDate ?? ''}</td>
+                <td>${trip.arrivalDate ?? ''}</td>
+                <td>${trip.durationDays ?? ''}</td>
+            </tr>
+        `).join('');
+    }
+
+    archivePage = Number.isFinite(data.page) ? data.page : 0;
+    archiveTotalPages = Number.isFinite(data.totalPages) ? data.totalPages : 0;
+
+    const safeTotalPages = Math.max(archiveTotalPages, 1);
+    summary.textContent = `Найдено рейсов: ${data.totalElements ?? 0}`;
+    paginationInfo.textContent = `Страница ${archivePage + 1} из ${safeTotalPages}`;
+    prevBtn.disabled = archivePage <= 0;
+    nextBtn.disabled = archivePage >= safeTotalPages - 1;
+}
+
+function archiveRenderStats(stats) {
+    const tbody = document.getElementById('archiveStatsBody');
+    if (!tbody) {
+        return;
+    }
+
+    if (!Array.isArray(stats) || !stats.length) {
+        tbody.innerHTML = '<tr><td colspan="6">Нет статистики</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = stats.slice(0, 100).map((item) => `
+        <tr>
+            <td>${item.departurePoint ?? item.fromCity ?? ''} → ${item.destinationPoint ?? item.toCity ?? ''}</td>
+            <td>${item.departureMonth ?? ''}</td>
+            <td>${item.tripsCount ?? ''}</td>
+            <td>${item.p50Days ?? ''}</td>
+            <td>${item.p80Days ?? ''}</td>
+            <td>${item.minDays ?? ''}-${item.maxDays ?? ''}</td>
+        </tr>
+    `).join('');
+}
+
+async function archiveLoad(page = 0) {
+    const summary = document.getElementById('archiveSummary');
+    if (summary) {
+        summary.textContent = 'Загрузка...';
+    }
+
+    try {
+        const [tripData, statsData] = await Promise.all([
+            archiveFetchTrips(page),
+            archiveFetchStats()
+        ]);
+
+        archiveRenderTrips(tripData);
+        archiveRenderStats(statsData);
+    } catch (error) {
+        console.error(error);
+        if (summary) {
+            summary.textContent = 'Не удалось загрузить архивные данные';
+        }
+    }
+}
+
+function archiveReset() {
+    const form = document.getElementById('archiveSearchForm');
+    if (form) {
+        form.reset();
+    }
+
+    archivePage = 0;
+    archiveTotalPages = 0;
+
+    const tripsBody = document.getElementById('archiveTripsBody');
+    const statsBody = document.getElementById('archiveStatsBody');
+    const summary = document.getElementById('archiveSummary');
+    const pageInfo = document.getElementById('archivePaginationInfo');
+    const prevBtn = document.getElementById('archivePrevPage');
+    const nextBtn = document.getElementById('archiveNextPage');
+
+    if (tripsBody) tripsBody.innerHTML = '<tr><td colspan="6">Нет данных</td></tr>';
+    if (statsBody) statsBody.innerHTML = '<tr><td colspan="6">Нет статистики</td></tr>';
+    if (summary) summary.textContent = 'Введите фильтры и нажмите «Найти рейсы».';
+    if (pageInfo) pageInfo.textContent = 'Страница 1';
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    const archiveForm = document.getElementById('archiveSearchForm');
+    const archiveClearBtn = document.getElementById('archiveClearBtn');
+    const archivePrevBtn = document.getElementById('archivePrevPage');
+    const archiveNextBtn = document.getElementById('archiveNextPage');
+
+    if (archiveForm) {
+        archiveForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await archiveLoad(0);
+        });
+    }
+
+    if (archiveClearBtn) {
+        archiveClearBtn.addEventListener('click', () => {
+            archiveReset();
+        });
+    }
+
+    if (archivePrevBtn) {
+        archivePrevBtn.addEventListener('click', async () => {
+            if (archivePage > 0) {
+                await archiveLoad(archivePage - 1);
+            }
+        });
+    }
+
+    if (archiveNextBtn) {
+        archiveNextBtn.addEventListener('click', async () => {
+            if (archivePage + 1 < Math.max(archiveTotalPages, 1)) {
+                await archiveLoad(archivePage + 1);
+            }
+        });
+    }
+
+    archiveReset();
+});
+
+
+
+// Tabs UI
+window.addEventListener('DOMContentLoaded', () => {
+    const tabRoute = document.getElementById('tabRoute');
+    const tabArchive = document.getElementById('tabArchive');
+    const routePanel = document.getElementById('routePanel');
+    const archivePanel = document.getElementById('archivePanel');
+
+    if (!tabRoute || !tabArchive || !routePanel || !archivePanel) {
+        return;
+    }
+
+    const activateTab = (tab) => {
+        const showRoute = tab === 'route';
+
+        tabRoute.classList.toggle('active', showRoute);
+        tabArchive.classList.toggle('active', !showRoute);
+
+        routePanel.classList.toggle('active', showRoute);
+        archivePanel.classList.toggle('active', !showRoute);
+
+        // Leaflet recalculates layout after panel switch
+        setTimeout(() => map.invalidateSize(), 0);
+    };
+
+    tabRoute.addEventListener('click', () => activateTab('route'));
+    tabArchive.addEventListener('click', () => activateTab('archive'));
+
+    activateTab('route');
+});
+

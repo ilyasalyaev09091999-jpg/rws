@@ -1,4 +1,4 @@
-﻿package com.refdata.api.domain.entities.rws_api;
+package com.refdata.api.domain.entities.rws_api;
 
 import lombok.Getter;
 import lombok.Setter;

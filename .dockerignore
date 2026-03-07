@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+.gradle
+.gradle-local
+**/.gradle
+**/build
+**/out
+**/target
+**/*.iml
+**/*.log
+**/.DS_Store
+
+# Local dev artifacts
+client/node_modules

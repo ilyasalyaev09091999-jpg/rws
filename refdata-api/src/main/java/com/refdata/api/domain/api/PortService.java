@@ -1,4 +1,4 @@
-﻿package com.refdata.api.domain.api;
+package com.refdata.api.domain.api;
 
 import com.refdata.api.domain.entities.route_api.PortForRoute;
 import com.refdata.api.domain.entities.rws_api.PortForRws;

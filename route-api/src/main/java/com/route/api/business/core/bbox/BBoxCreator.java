@@ -1,4 +1,4 @@
-﻿package com.route.api.business.core.bbox;
+package com.route.api.business.core.bbox;
 
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-﻿package com.geography.importer.access_data.db.jpa.model;
+package com.geography.importer.access_data.db.jpa.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

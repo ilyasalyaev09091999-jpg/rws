@@ -1,4 +1,4 @@
-﻿package com.geography.importer.business.importpbf.core.util;
+package com.geography.importer.business.importpbf.core.util;
 
 import lombok.experimental.UtilityClass;
 import org.locationtech.jts.geom.Coordinate;

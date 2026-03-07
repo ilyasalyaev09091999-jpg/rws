@@ -1,4 +1,4 @@
-﻿package com.geography.importer.config;
+package com.geography.importer.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

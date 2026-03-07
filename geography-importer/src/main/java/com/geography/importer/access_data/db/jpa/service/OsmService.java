@@ -1,4 +1,4 @@
-﻿package com.geography.importer.access_data.db.jpa.service;
+package com.geography.importer.access_data.db.jpa.service;
 
 import com.geography.importer.access_data.db.jpa.model.NodeEntity;
 import com.geography.importer.access_data.db.jpa.model.WayEntity;
