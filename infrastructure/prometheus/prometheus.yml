@@ -18,23 +18,32 @@ scrape_configs:
     static_configs:
       - targets: ["refdata-postgres-exporter:9187"]
 
+  - job_name: archive-postgres
+    static_configs:
+      - targets: ["archive-postgres-exporter:9187"]
+
   # Сервисы в docker
   - job_name: refdata-api
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: [ "refdata-api:8082" ]
+      - targets: ["refdata-api:8082"]
 
   - job_name: route-api
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: [ "route-api:8080" ]
+      - targets: ["route-api:8080"]
 
   - job_name: rws-api
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: [ "rws-api:8083" ]
+      - targets: ["rws-api:8083"]
+
+  - job_name: archive-api
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["archive-api:8084"]
 
   - job_name: geography-importer
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: [ "geography-importer:8081" ]
+      - targets: ["geography-importer:8081"]
