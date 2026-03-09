@@ -1,4 +1,4 @@
-package com.archive.api.rest.archive.dto;
+package com.archive.api.business.read.dto;
 
 import java.util.List;
 

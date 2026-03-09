@@ -4,7 +4,13 @@ import com.archive.api.access_data.db.jpa.model.ArchiveTripEntity;
 import com.archive.api.access_data.db.jpa.repository.ArchiveTripJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -19,12 +25,34 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ArchiveXlsxImportService {
+
+    private static final String COL_DEPARTURE_POINT = "departure_point";
+    private static final String COL_DESTINATION_POINT = "destination_point";
+    private static final String COL_DEPARTURE_DATE = "departure_date";
+    private static final String COL_ARRIVAL_DATE = "arrival_date";
+    private static final String COL_VOYAGE_NAME = "voyage_name";
+    private static final String COL_TRIP_TYPE = "trip_type";
+    private static final String COL_TUG_NAME = "tug_name";
+    private static final String COL_REGION_FROM = "region_from";
+    private static final String COL_REGION_TO = "region_to";
+    private static final String COL_CARGO_AMOUNT = "cargo_amount";
+    private static final String COL_DRAFT_M = "draft_m";
+    private static final String COL_COUNTERPARTY_NAME = "counterparty_name";
+    private static final String COL_COUNTERPARTY_INN = "counterparty_inn";
+    private static final String COL_FLAG = "flag";
+    private static final String COL_UNITS_COUNT = "units_count";
+    private static final String COL_CARGO_TYPE = "cargo_type";
 
     private static final List<DateTimeFormatter> DATE_FORMATTERS = List.of(
             DateTimeFormatter.ofPattern("d.M.uuuu"),
@@ -125,10 +153,10 @@ public class ArchiveXlsxImportService {
     }
 
     private ArchiveTripEntity mapRow(String fileName, int sourceRowNum, Row row, Map<String, Integer> columns) {
-        String departurePoint = readString(row, columns.get("departure_point"));
-        String destinationPoint = readString(row, columns.get("destination_point"));
-        LocalDate departureDate = readDate(row, columns.get("departure_date"));
-        LocalDate arrivalDate = readDate(row, columns.get("arrival_date"));
+        String departurePoint = readString(row, columns.get(COL_DEPARTURE_POINT));
+        String destinationPoint = readString(row, columns.get(COL_DESTINATION_POINT));
+        LocalDate departureDate = readDate(row, columns.get(COL_DEPARTURE_DATE));
+        LocalDate arrivalDate = readDate(row, columns.get(COL_ARRIVAL_DATE));
 
         if (isBlank(departurePoint) || isBlank(destinationPoint) || departureDate == null || arrivalDate == null) {
             throw new IllegalArgumentException("Required values are missing in row");
@@ -139,32 +167,32 @@ public class ArchiveXlsxImportService {
         entity.setSourceRowNum(sourceRowNum);
         entity.setSourceSystem("xlsx");
 
-        entity.setVoyageName(readString(row, columns.get("voyage_name")));
-        entity.setTripType(readString(row, columns.get("trip_type")));
-        entity.setTugName(readString(row, columns.get("tug_name")));
+        entity.setVoyageName(readString(row, columns.get(COL_VOYAGE_NAME)));
+        entity.setTripType(readString(row, columns.get(COL_TRIP_TYPE)));
+        entity.setTugName(readString(row, columns.get(COL_TUG_NAME)));
 
         entity.setDeparturePoint(departurePoint);
         entity.setDestinationPoint(destinationPoint);
         entity.setDepartureDate(departureDate);
         entity.setArrivalDate(arrivalDate);
 
-        entity.setCargoType(readString(row, columns.get("cargo_type")));
-        entity.setCargoAmount(readDecimal(row, columns.get("cargo_amount")));
-        entity.setUnitsCount(readInteger(row, columns.get("units_count")));
-        entity.setDraftM(readDecimal(row, columns.get("draft_m")));
+        entity.setCargoType(readString(row, columns.get(COL_CARGO_TYPE)));
+        entity.setCargoAmount(readDecimal(row, columns.get(COL_CARGO_AMOUNT)));
+        entity.setUnitsCount(readInteger(row, columns.get(COL_UNITS_COUNT)));
+        entity.setDraftM(readDecimal(row, columns.get(COL_DRAFT_M)));
 
-        entity.setCounterpartyName(readString(row, columns.get("counterparty_name")));
-        entity.setCounterpartyInn(readString(row, columns.get("counterparty_inn")));
-        entity.setFlag(readString(row, columns.get("flag")));
+        entity.setCounterpartyName(readString(row, columns.get(COL_COUNTERPARTY_NAME)));
+        entity.setCounterpartyInn(readString(row, columns.get(COL_COUNTERPARTY_INN)));
+        entity.setFlag(readString(row, columns.get(COL_FLAG)));
 
-        entity.setRegionFrom(readString(row, columns.get("region_from")));
-        entity.setRegionTo(readString(row, columns.get("region_to")));
+        entity.setRegionFrom(readString(row, columns.get(COL_REGION_FROM)));
+        entity.setRegionTo(readString(row, columns.get(COL_REGION_TO)));
 
         return entity;
     }
 
     private void validateRequiredColumns(Map<String, Integer> columns, List<String> rawHeaders) {
-        List<String> required = List.of("departure_point", "destination_point", "departure_date", "arrival_date");
+        List<String> required = List.of(COL_DEPARTURE_POINT, COL_DESTINATION_POINT, COL_DEPARTURE_DATE, COL_ARRIVAL_DATE);
         List<String> missing = required.stream().filter(key -> !columns.containsKey(key)).toList();
 
         if (!missing.isEmpty()) {
@@ -194,38 +222,38 @@ public class ArchiveXlsxImportService {
             String normalized = normalize(rawHeader);
 
             if (isDepartureCityHeader(normalized)) {
-                map.putIfAbsent("departure_point", i);
+                map.putIfAbsent(COL_DEPARTURE_POINT, i);
             } else if (isArrivalCityHeader(normalized)) {
-                map.putIfAbsent("destination_point", i);
+                map.putIfAbsent(COL_DESTINATION_POINT, i);
             } else if (isDepartureDateHeader(normalized)) {
-                map.putIfAbsent("departure_date", i);
+                map.putIfAbsent(COL_DEPARTURE_DATE, i);
             } else if (isArrivalDateHeader(normalized)) {
-                map.putIfAbsent("arrival_date", i);
+                map.putIfAbsent(COL_ARRIVAL_DATE, i);
             } else if (containsAny(normalized, RU_REIS, "voyage", "trip")) {
-                map.putIfAbsent("voyage_name", i);
+                map.putIfAbsent(COL_VOYAGE_NAME, i);
             } else if (isTripTypeHeader(normalized)) {
-                map.putIfAbsent("trip_type", i);
+                map.putIfAbsent(COL_TRIP_TYPE, i);
             } else if (containsAny(normalized, RU_BUKSIR, "tug")) {
-                map.putIfAbsent("tug_name", i);
+                map.putIfAbsent(COL_TUG_NAME, i);
             } else if (containsAny(normalized, RU_REGION + " " + RU_OTPRAV, "region from")) {
-                map.putIfAbsent("region_from", i);
+                map.putIfAbsent(COL_REGION_FROM, i);
             } else if (containsAny(normalized, RU_REGION + " " + RU_PRIB, "region to", "region arrival")) {
-                map.putIfAbsent("region_to", i);
+                map.putIfAbsent(COL_REGION_TO, i);
             } else if (containsAny(normalized, RU_KOLICHESTVO + " " + RU_GRUZ, "cargo amount", "cargo qty", "cargo quantity")) {
-                map.putIfAbsent("cargo_amount", i);
+                map.putIfAbsent(COL_CARGO_AMOUNT, i);
             } else if (containsAny(normalized, RU_OSADK, "draft")) {
-                map.putIfAbsent("draft_m", i);
+                map.putIfAbsent(COL_DRAFT_M, i);
             } else if (containsAny(normalized, RU_KONTRAGENT)) {
-                map.putIfAbsent("counterparty_name", i);
+                map.putIfAbsent(COL_COUNTERPARTY_NAME, i);
             } else if (containsAny(normalized, RU_INN, "inn")) {
-                map.putIfAbsent("counterparty_inn", i);
+                map.putIfAbsent(COL_COUNTERPARTY_INN, i);
             } else if (containsAny(normalized, RU_FLAG, "flag")) {
-                map.putIfAbsent("flag", i);
+                map.putIfAbsent(COL_FLAG, i);
             } else if (containsAny(normalized, RU_KOLICHESTVO, "qty", "quantity")
                     && !containsAny(normalized, RU_GRUZ, "cargo")) {
-                map.putIfAbsent("units_count", i);
+                map.putIfAbsent(COL_UNITS_COUNT, i);
             } else if (containsAny(normalized, RU_GRUZ, "cargo")) {
-                map.putIfAbsent("cargo_type", i);
+                map.putIfAbsent(COL_CARGO_TYPE, i);
             }
         }
 
