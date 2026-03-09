@@ -36,3 +36,14 @@ dependencies {
     implementation("net.devh:grpc-server-spring-boot-starter:2.15.0.RELEASE")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 }
+
+dependencies {
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.grpc:grpc-testing:1.75.0")
+    testImplementation("io.grpc:grpc-inprocess:1.75.0")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}

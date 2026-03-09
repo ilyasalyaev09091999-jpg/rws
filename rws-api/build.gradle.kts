@@ -32,3 +32,14 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 }
+
+dependencies {
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.grpc:grpc-testing:1.75.0")
+    testImplementation("io.grpc:grpc-inprocess:1.75.0")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}

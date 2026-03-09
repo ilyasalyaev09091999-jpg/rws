@@ -8,6 +8,8 @@ option java_outer_classname = "ArchiveProto";
 
 service ArchiveService {
   rpc ImportXlsx(ArchiveImportXlsxRequest) returns (ArchiveImportResultResponse);
+  rpc StartImportXlsx(ArchiveImportXlsxRequest) returns (ArchiveImportJobStatusResponse);
+  rpc GetImportJobStatus(ArchiveImportJobStatusRequest) returns (ArchiveImportJobStatusResponse);
   rpc SearchTrips(ArchiveSearchRequest) returns (ArchiveTripSearchResponse);
   rpc GetRouteStats(ArchiveAnalyticsRequest) returns (ArchiveRouteStatsResponse);
 }
@@ -23,6 +25,21 @@ message ArchiveImportResultResponse {
   int32 imported_rows = 3;
   int32 skipped_rows = 4;
   int32 error_rows = 5;
+}
+
+message ArchiveImportJobStatusRequest {
+  string job_id = 1;
+}
+
+message ArchiveImportJobStatusResponse {
+  string job_id = 1;
+  string status = 2;
+  string file_name = 3;
+  int32 total_rows = 4;
+  int32 imported_rows = 5;
+  int32 skipped_rows = 6;
+  int32 error_rows = 7;
+  string error_message = 8;
 }
 
 message ArchiveSearchRequest {
