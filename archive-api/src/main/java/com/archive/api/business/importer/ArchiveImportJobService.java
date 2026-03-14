@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Сервис управления асинхронными задачами импорта архива.
+ */
 @Service
 public class ArchiveImportJobService {
 
@@ -23,6 +26,13 @@ public class ArchiveImportJobService {
         this.taskExecutor = taskExecutor;
     }
 
+    /**
+     * Запускает асинхронный импорт и возвращает начальный статус.
+     *
+     * @param fileName имя файла
+     * @param content байты файла
+     * @return статус созданной задачи
+     */
     public ArchiveImportJobStatus start(String fileName, byte[] content) {
         if (content == null || content.length == 0) {
             throw new IllegalArgumentException("File is empty");
@@ -39,6 +49,12 @@ public class ArchiveImportJobService {
         return state.snapshot();
     }
 
+    /**
+     * Возвращает актуальный статус задачи по {@code jobId}.
+     *
+     * @param jobId идентификатор задачи
+     * @return текущий статус задачи
+     */
     public ArchiveImportJobStatus getStatus(String jobId) {
         if (jobId == null || jobId.isBlank()) {
             throw new IllegalArgumentException("jobId is empty");

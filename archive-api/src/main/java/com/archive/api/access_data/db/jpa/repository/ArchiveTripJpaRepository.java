@@ -10,11 +10,31 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 
+/**
+ * JPA-репозиторий для чтения/записи записей архива рейсов.
+ */
 @Repository
 public interface ArchiveTripJpaRepository extends JpaRepository<ArchiveTripEntity, Long> {
 
+    /**
+     * Проверяет, существует ли запись для указанного файла и номера строки.
+     *
+     * @param sourceFileName имя файла-источника
+     * @param sourceRowNum номер строки в файле
+     * @return {@code true}, если запись уже существует
+     */
     boolean existsBySourceFileNameAndSourceRowNum(String sourceFileName, Integer sourceRowNum);
 
+    /**
+     * Выполняет поиск по фильтрам с поддержкой пагинации.
+     *
+     * @param departurePoint опциональная точка отправления
+     * @param destinationPoint опциональная точка назначения
+     * @param dateFrom опциональная нижняя граница даты отправления
+     * @param dateTo опциональная верхняя граница даты отправления
+     * @param pageable настройки пагинации
+     * @return страница результатов
+     */
     @Query("""
             select t
             from ArchiveTripEntity t

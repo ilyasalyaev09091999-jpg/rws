@@ -7,9 +7,18 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Маппер статистики маршрутов между внутренними DTO и protobuf.
+ */
 @Component
 public class ArchiveGrpcStatsMapper {
 
+    /**
+     * Маппит список статистики в protobuf-ответ.
+     *
+     * @param stats список статистических элементов
+     * @return protobuf-ответ
+     */
     public ArchiveRouteStatsResponse toProto(List<ArchiveRouteStatsItem> stats) {
         ArchiveRouteStatsResponse.Builder responseBuilder = ArchiveRouteStatsResponse.newBuilder();
         for (ArchiveRouteStatsItem item : stats) {
@@ -31,10 +40,22 @@ public class ArchiveGrpcStatsMapper {
         return responseBuilder.build();
     }
 
+    /**
+     * Преобразует десятичное число в строку для protobuf.
+     *
+     * @param value число
+     * @return строковое представление числа или пустая строка
+     */
     private String toDecimalString(BigDecimal value) {
         return value == null ? "" : value.toPlainString();
     }
 
+    /**
+     * Преобразует {@code null} в пустую строку.
+     *
+     * @param value исходное значение
+     * @return пустая строка при {@code null}, иначе исходное значение
+     */
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
     }

@@ -8,6 +8,9 @@ import com.archive.grpc.ArchiveRouteStatsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Обработчик gRPC-запросов маршрутной статистики.
+ */
 @Component
 @RequiredArgsConstructor
 public class ArchiveGrpcStatsHandler {
@@ -16,6 +19,12 @@ public class ArchiveGrpcStatsHandler {
     private final ArchiveGrpcStatsMapper archiveGrpcStatsMapper;
     private final ArchiveGrpcRequestMapper archiveGrpcRequestMapper;
 
+    /**
+     * Возвращает агрегированную статистику и маппит ее в protobuf.
+     *
+     * @param request gRPC-запрос аналитики
+     * @return protobuf-ответ со статистикой
+     */
     public ArchiveRouteStatsResponse handle(ArchiveAnalyticsRequest request) {
         String departurePoint = archiveGrpcRequestMapper.nullIfBlank(request.getDeparturePoint());
         String destinationPoint = archiveGrpcRequestMapper.nullIfBlank(request.getDestinationPoint());

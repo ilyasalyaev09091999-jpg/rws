@@ -13,6 +13,9 @@ import com.archive.grpc.ArchiveImportXlsxRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Обработчик gRPC-запросов импорта архива.
+ */
 @Component
 @RequiredArgsConstructor
 public class ArchiveGrpcImportHandler {
@@ -22,6 +25,12 @@ public class ArchiveGrpcImportHandler {
     private final ArchiveGrpcImportMapper archiveGrpcImportMapper;
     private final ArchiveGrpcRequestMapper archiveGrpcRequestMapper;
 
+    /**
+     * Выполняет синхронный импорт и маппит результат в protobuf.
+     *
+     * @param request gRPC-запрос импорта
+     * @return protobuf-ответ импорта
+     */
     public ArchiveImportResultResponse handleSync(ArchiveImportXlsxRequest request) {
         if (request.getContent().isEmpty()) {
             throw new IllegalArgumentException("File is empty");
@@ -34,6 +43,12 @@ public class ArchiveGrpcImportHandler {
         return archiveGrpcImportMapper.toProto(result);
     }
 
+    /**
+     * Запускает асинхронный импорт и возвращает начальный статус.
+     *
+     * @param request gRPC-запрос импорта
+     * @return protobuf-ответ со статусом задачи
+     */
     public ArchiveImportJobStatusResponse handleStartAsync(ArchiveImportXlsxRequest request) {
         String fileName = archiveGrpcRequestMapper.normalizeFileName(request.getFileName());
         return archiveGrpcImportMapper.toProto(
@@ -41,6 +56,12 @@ public class ArchiveGrpcImportHandler {
         );
     }
 
+    /**
+     * Получает статус асинхронной задачи по {@code jobId}.
+     *
+     * @param request gRPC-запрос статуса
+     * @return protobuf-ответ со статусом задачи
+     */
     public ArchiveImportJobStatusResponse handleGetStatus(ArchiveImportJobStatusRequest request) {
         return archiveGrpcImportMapper.toProto(
                 archiveImportJobService.getStatus(request.getJobId())

@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
+/**
+ * JPA-сущность записи архивного рейса.
+ */
 @Entity
 @Table(name = "archive_trip")
 @Getter

@@ -1,7 +1,5 @@
 package com.archive.api.grpc;
 
-import com.archive.api.business.read.dto.ArchiveRouteStatsItem;
-import com.archive.api.business.read.dto.ArchiveTripSearchResponse;
 import com.archive.api.grpc.handler.ArchiveGrpcImportHandler;
 import com.archive.api.grpc.handler.ArchiveGrpcSearchHandler;
 import com.archive.api.grpc.handler.ArchiveGrpcStatsHandler;
@@ -18,14 +16,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Контрактные тесты gRPC сервиса архива.
+ */
 class ArchiveGrpcServiceContractTest {
 
     private Server server;
@@ -36,6 +34,11 @@ class ArchiveGrpcServiceContractTest {
     private ArchiveGrpcSearchHandler searchHandler;
     private ArchiveGrpcStatsHandler statsHandler;
 
+    /**
+     * Поднимает in-process gRPC сервер и клиент.
+     *
+     * @throws Exception если сервер не удалось запустить
+     */
     @BeforeEach
     void setUp() throws Exception {
         importHandler = mock(ArchiveGrpcImportHandler.class);
@@ -53,6 +56,9 @@ class ArchiveGrpcServiceContractTest {
         stub = ArchiveServiceGrpc.newBlockingStub(channel);
     }
 
+    /**
+     * Останавливает in-process gRPC сервер и клиент.
+     */
     @AfterEach
     void tearDown() {
         if (channel != null) {
@@ -63,6 +69,9 @@ class ArchiveGrpcServiceContractTest {
         }
     }
 
+    /**
+     * Проверяет успешный ответ поиска с маппингом данных.
+     */
     @Test
     void searchTripsReturnsMappedResponse() {
         when(searchHandler.handle(any())).thenReturn(
@@ -85,6 +94,9 @@ class ArchiveGrpcServiceContractTest {
         assertEquals("A", response.getItems(0).getDeparturePoint());
     }
 
+    /**
+     * Проверяет успешный ответ по статистике маршрутов.
+     */
     @Test
     void getRouteStatsReturnsData() {
         when(statsHandler.handle(any())).thenReturn(
@@ -103,6 +115,9 @@ class ArchiveGrpcServiceContractTest {
         assertEquals(5, response.getItems(0).getTripsCount());
     }
 
+    /**
+     * Проверяет, что ошибка валидации импорта возвращается как INVALID_ARGUMENT.
+     */
     @Test
     void importXlsxReturnsInvalidArgumentOnValidationError() {
         when(importHandler.handleSync(any())).thenThrow(new IllegalArgumentException("File is empty"));

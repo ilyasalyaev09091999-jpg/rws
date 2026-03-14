@@ -10,12 +10,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * JDBC-репозиторий для чтения агрегированной статистики по маршрутам.
+ */
 @Repository
 @RequiredArgsConstructor
 public class ArchiveRouteStatsRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
+    /**
+     * Возвращает статистику по маршрутам с учетом фильтров.
+     *
+     * @param departurePoint опциональная точка отправления
+     * @param destinationPoint опциональная точка назначения
+     * @param month опциональный месяц отправления (1..12)
+     * @return список статистических элементов
+     */
     public List<ArchiveRouteStatsItem> findStats(String departurePoint, String destinationPoint, Integer month) {
         String sql = """
                 select departure_point,

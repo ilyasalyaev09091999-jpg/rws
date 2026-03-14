@@ -16,6 +16,9 @@ import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+/**
+ * Реализация gRPC сервиса {@code ArchiveService} на стороне {@code archive-api}.
+ */
 @GrpcService
 @RequiredArgsConstructor
 public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBase {
@@ -24,6 +27,12 @@ public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBas
     private final ArchiveGrpcSearchHandler searchHandler;
     private final ArchiveGrpcStatsHandler statsHandler;
 
+    /**
+     * Синхронный импорт XLSX через gRPC.
+     *
+     * @param request запрос импорта
+     * @param responseObserver observer ответа
+     */
     @Override
     public void importXlsx(ArchiveImportXlsxRequest request, StreamObserver<ArchiveImportResultResponse> responseObserver) {
         try {
@@ -36,6 +45,12 @@ public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBas
         }
     }
 
+    /**
+     * Запуск асинхронного импорта XLSX через gRPC.
+     *
+     * @param request запрос импорта
+     * @param responseObserver observer ответа
+     */
     @Override
     public void startImportXlsx(ArchiveImportXlsxRequest request, StreamObserver<ArchiveImportJobStatusResponse> responseObserver) {
         try {
@@ -48,6 +63,12 @@ public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBas
         }
     }
 
+    /**
+     * Получение статуса асинхронного импорта.
+     *
+     * @param request запрос статуса
+     * @param responseObserver observer ответа
+     */
     @Override
     public void getImportJobStatus(ArchiveImportJobStatusRequest request, StreamObserver<ArchiveImportJobStatusResponse> responseObserver) {
         try {
@@ -60,6 +81,12 @@ public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBas
         }
     }
 
+    /**
+     * Поиск архивных рейсов.
+     *
+     * @param request запрос поиска
+     * @param responseObserver observer ответа
+     */
     @Override
     public void searchTrips(ArchiveSearchRequest request, StreamObserver<com.archive.grpc.ArchiveTripSearchResponse> responseObserver) {
         try {
@@ -72,6 +99,12 @@ public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBas
         }
     }
 
+    /**
+     * Получение маршрутной статистики архива.
+     *
+     * @param request запрос аналитики
+     * @param responseObserver observer ответа
+     */
     @Override
     public void getRouteStats(ArchiveAnalyticsRequest request, StreamObserver<ArchiveRouteStatsResponse> responseObserver) {
         try {

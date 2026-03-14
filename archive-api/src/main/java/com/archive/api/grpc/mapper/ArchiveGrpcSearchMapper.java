@@ -7,9 +7,18 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * Маппер результатов поиска архива между внутренними DTO и protobuf.
+ */
 @Component
 public class ArchiveGrpcSearchMapper {
 
+    /**
+     * Маппит результат поиска в protobuf-ответ.
+     *
+     * @param source результат поиска
+     * @return protobuf-ответ поиска
+     */
     public com.archive.grpc.ArchiveTripSearchResponse toProto(ArchiveTripSearchResponse source) {
         com.archive.grpc.ArchiveTripSearchResponse.Builder responseBuilder = com.archive.grpc.ArchiveTripSearchResponse.newBuilder()
                 .setPage(source.page())
@@ -51,14 +60,32 @@ public class ArchiveGrpcSearchMapper {
         return responseBuilder.build();
     }
 
+    /**
+     * Преобразует дату в строку {@code yyyy-MM-dd} для protobuf.
+     *
+     * @param value дата
+     * @return строковое представление даты или пустая строка
+     */
     private String toDateString(LocalDate value) {
         return value == null ? "" : value.toString();
     }
 
+    /**
+     * Преобразует десятичное число в строку для protobuf.
+     *
+     * @param value число
+     * @return строковое представление числа или пустая строка
+     */
     private String toDecimalString(BigDecimal value) {
         return value == null ? "" : value.toPlainString();
     }
 
+    /**
+     * Преобразует {@code null} в пустую строку.
+     *
+     * @param value исходное значение
+     * @return пустая строка при {@code null}, иначе исходное значение
+     */
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
     }

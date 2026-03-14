@@ -24,11 +24,19 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Контрактные тесты {@link ArchiveApiClient} с in-process gRPC сервером.
+ */
 class ArchiveApiClientContractTest {
 
     private Server server;
     private ManagedChannel channel;
 
+    /**
+     * Поднимает in-process gRPC сервер и канал.
+     *
+     * @throws Exception если сервер не удалось инициализировать
+     */
     @BeforeEach
     void setUp() throws Exception {
         String serverName = InProcessServerBuilder.generateName();
@@ -42,6 +50,9 @@ class ArchiveApiClientContractTest {
         channel = InProcessChannelBuilder.forName(serverName).directExecutor().build();
     }
 
+    /**
+     * Останавливает in-process gRPC сервер и канал.
+     */
     @AfterEach
     void tearDown() {
         if (channel != null) {
@@ -52,6 +63,11 @@ class ArchiveApiClientContractTest {
         }
     }
 
+    /**
+     * Проверяет маппинг поиска, статистики и async-импорта.
+     *
+     * @throws Exception если отражение или тестовая настройка завершились ошибкой
+     */
     @Test
     void clientMapsSearchAndStatsAndAsyncImport() throws Exception {
         ArchiveApiClient client = new ArchiveApiClient(new ArchiveGrpcClientMapper());
@@ -77,8 +93,17 @@ class ArchiveApiClientContractTest {
         assertEquals(10, sync.totalRows());
     }
 
+    /**
+     * Фейковый gRPC сервис для детерминированных ответов в тестах.
+     */
     private static class FakeArchiveService extends ArchiveServiceGrpc.ArchiveServiceImplBase {
 
+        /**
+         * Возвращает фиксированный результат синхронного импорта.
+         *
+         * @param request запрос импорта
+         * @param responseObserver observer ответа
+         */
         @Override
         public void importXlsx(ArchiveImportXlsxRequest request, StreamObserver<ArchiveImportResultResponse> responseObserver) {
             responseObserver.onNext(ArchiveImportResultResponse.newBuilder()
@@ -91,6 +116,12 @@ class ArchiveApiClientContractTest {
             responseObserver.onCompleted();
         }
 
+        /**
+         * Возвращает фиксированный статус async-импорта.
+         *
+         * @param request запрос импорта
+         * @param responseObserver observer ответа
+         */
         @Override
         public void startImportXlsx(ArchiveImportXlsxRequest request, StreamObserver<ArchiveImportJobStatusResponse> responseObserver) {
             responseObserver.onNext(ArchiveImportJobStatusResponse.newBuilder()
@@ -101,6 +132,12 @@ class ArchiveApiClientContractTest {
             responseObserver.onCompleted();
         }
 
+        /**
+         * Возвращает фиксированный статус для указанного {@code jobId}.
+         *
+         * @param request запрос статуса
+         * @param responseObserver observer ответа
+         */
         @Override
         public void getImportJobStatus(ArchiveImportJobStatusRequest request, StreamObserver<ArchiveImportJobStatusResponse> responseObserver) {
             responseObserver.onNext(ArchiveImportJobStatusResponse.newBuilder()
@@ -114,6 +151,12 @@ class ArchiveApiClientContractTest {
             responseObserver.onCompleted();
         }
 
+        /**
+         * Возвращает фиксированный ответ поиска для проверки маппинга.
+         *
+         * @param request запрос поиска
+         * @param responseObserver observer ответа
+         */
         @Override
         public void searchTrips(ArchiveSearchRequest request, StreamObserver<com.archive.grpc.ArchiveTripSearchResponse> responseObserver) {
             responseObserver.onNext(com.archive.grpc.ArchiveTripSearchResponse.newBuilder()
@@ -133,6 +176,12 @@ class ArchiveApiClientContractTest {
             responseObserver.onCompleted();
         }
 
+        /**
+         * Возвращает фиксированный ответ аналитики для проверки маппинга.
+         *
+         * @param request запрос аналитики
+         * @param responseObserver observer ответа
+         */
         @Override
         public void getRouteStats(ArchiveAnalyticsRequest request, StreamObserver<ArchiveRouteStatsResponse> responseObserver) {
             responseObserver.onNext(ArchiveRouteStatsResponse.newBuilder()

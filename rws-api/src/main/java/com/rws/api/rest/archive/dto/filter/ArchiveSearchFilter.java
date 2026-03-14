@@ -8,10 +8,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 /**
- * Фильтр REST-запроса для поиска архивных рейсов.
+ * Фильтр запроса для поиска архивных рейсов.
  *
- * <p>Поддерживает как новые поля ({@code departurePoint}/{@code destinationPoint}),
- * так и legacy-алиасы ({@code fromCity}/{@code toCity}).</p>
+ * <p>Поддерживает новые имена полей ({@code departurePoint}/{@code destinationPoint})
+ * и legacy-алиасы ({@code fromCity}/{@code toCity}).</p>
  */
 @Data
 public class ArchiveSearchFilter {
@@ -35,19 +35,30 @@ public class ArchiveSearchFilter {
     private Integer size = 20;
 
     /**
-     * Возвращает нормализованную точку отправления с fallback на legacy поле.
+     * Возвращает эффективную точку отправления с fallback на legacy-поле.
+     *
+     * @return нормализованная точка отправления или {@code null}
      */
     public String effectiveDeparturePoint() {
         return firstNonBlank(departurePoint, fromCity);
     }
 
     /**
-     * Возвращает нормализованную точку назначения с fallback на legacy поле.
+     * Возвращает эффективную точку назначения с fallback на legacy-поле.
+     *
+     * @return нормализованная точка назначения или {@code null}
      */
     public String effectiveDestinationPoint() {
         return firstNonBlank(destinationPoint, toCity);
     }
 
+    /**
+     * Возвращает первое непустое значение из двух кандидатов.
+     *
+     * @param first первый кандидат
+     * @param second второй кандидат
+     * @return первое непустое значение или {@code null}
+     */
     private String firstNonBlank(String first, String second) {
         if (first != null && !first.isBlank()) {
             return first;

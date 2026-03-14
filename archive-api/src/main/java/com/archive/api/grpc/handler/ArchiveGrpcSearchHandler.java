@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+/**
+ * Обработчик gRPC-запросов поиска по архиву.
+ */
 @Component
 @RequiredArgsConstructor
 public class ArchiveGrpcSearchHandler {
@@ -17,6 +20,12 @@ public class ArchiveGrpcSearchHandler {
     private final ArchiveGrpcSearchMapper archiveGrpcSearchMapper;
     private final ArchiveGrpcRequestMapper archiveGrpcRequestMapper;
 
+    /**
+     * Выполняет поиск и маппит результат в protobuf.
+     *
+     * @param request gRPC-запрос поиска
+     * @return protobuf-ответ поиска
+     */
     public com.archive.grpc.ArchiveTripSearchResponse handle(ArchiveSearchRequest request) {
         String departurePoint = archiveGrpcRequestMapper.nullIfBlank(request.getDeparturePoint());
         String destinationPoint = archiveGrpcRequestMapper.nullIfBlank(request.getDestinationPoint());

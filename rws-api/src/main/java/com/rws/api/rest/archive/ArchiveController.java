@@ -19,11 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 /**
- * REST API для работы с архивом рейсов на стороне {@code rws-api}.
+ * REST API для работы с архивом рейсов в {@code rws-api}.
  *
- * <p>Контроллер выступает фасадом: принимает HTTP-запросы от UI/клиентов и
- * делегирует операции в {@link ArchiveApiClient}, который общается с {@code archive-api}
- * по gRPC.</p>
+ * <p>Контроллер выступает фасадом между UI и {@code archive-api}:
+ * принимает HTTP-запросы, валидирует входные данные и делегирует
+ * операции в {@link ArchiveApiClient}, который общается с {@code archive-api} по gRPC.</p>
  */
 @Slf4j
 @Validated
@@ -39,6 +39,9 @@ public class ArchiveController {
      * Синхронный импорт XLSX.
      *
      * <p>Запрос блокируется до завершения обработки файла.</p>
+     *
+     * @param file XLSX-файл из multipart запроса
+     * @return статистика импорта по файлу
      */
     @PostMapping(value = "/import/xlsx", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ArchiveImportResult> importXlsx(@RequestPart("file") MultipartFile file) {
@@ -49,7 +52,8 @@ public class ArchiveController {
     /**
      * Асинхронный импорт XLSX.
      *
-     * <p>Возвращает {@code jobId} и начальный статус задачи импорта.</p>
+     * @param file XLSX-файл из multipart запроса
+     * @return начальный статус задачи с {@code jobId}
      */
     @PostMapping(value = "/import/xlsx/async", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ArchiveImportJobStatus> startImportXlsxAsync(@RequestPart("file") MultipartFile file) {
@@ -59,6 +63,9 @@ public class ArchiveController {
 
     /**
      * Получение статуса асинхронного импорта по {@code jobId}.
+     *
+     * @param jobId идентификатор задачи, полученный из {@link #startImportXlsxAsync(MultipartFile)}
+     * @return актуальный статус задачи с счетчиками и возможной ошибкой
      */
     @GetMapping("/import/jobs/{jobId}")
     public ResponseEntity<ArchiveImportJobStatus> getImportStatus(@PathVariable String jobId) {
@@ -66,7 +73,10 @@ public class ArchiveController {
     }
 
     /**
-     * Поиск рейсов архива по фильтрам.
+     * Поиск архивных рейсов по фильтрам.
+     *
+     * @param filter валидированный набор фильтров (поддерживаются legacy-алиасы)
+     * @return результат поиска с элементами и пагинацией
      */
     @GetMapping("/search")
     public ResponseEntity<ArchiveTripSearchResponse> search(@Valid @ModelAttribute ArchiveSearchFilter filter) {
@@ -91,6 +101,9 @@ public class ArchiveController {
 
     /**
      * Получение агрегированной статистики по маршрутам архива.
+     *
+     * @param filter валидированный набор фильтров статистики
+     * @return список статистических элементов
      */
     @GetMapping("/analytics")
     public ResponseEntity<List<ArchiveRouteStatsItem>> analytics(@Valid @ModelAttribute ArchiveAnalyticsFilter filter) {

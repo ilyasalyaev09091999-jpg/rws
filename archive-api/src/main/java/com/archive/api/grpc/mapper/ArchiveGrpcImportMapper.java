@@ -6,9 +6,18 @@ import com.archive.grpc.ArchiveImportJobStatusResponse;
 import com.archive.grpc.ArchiveImportResultResponse;
 import org.springframework.stereotype.Component;
 
+/**
+ * Маппер результатов импорта между внутренними DTO и protobuf.
+ */
 @Component
 public class ArchiveGrpcImportMapper {
 
+    /**
+     * Маппит результат синхронного импорта в protobuf.
+     *
+     * @param result результат импорта
+     * @return protobuf-ответ импорта
+     */
     public ArchiveImportResultResponse toProto(ArchiveImportResult result) {
         return ArchiveImportResultResponse.newBuilder()
                 .setFileName(result.fileName())
@@ -19,6 +28,12 @@ public class ArchiveGrpcImportMapper {
                 .build();
     }
 
+    /**
+     * Маппит статус асинхронной задачи импорта в protobuf.
+     *
+     * @param status статус задачи
+     * @return protobuf-ответ статуса
+     */
     public ArchiveImportJobStatusResponse toProto(ArchiveImportJobStatus status) {
         ArchiveImportJobStatusResponse.Builder builder = ArchiveImportJobStatusResponse.newBuilder()
                 .setJobId(status.jobId())
@@ -42,6 +57,12 @@ public class ArchiveGrpcImportMapper {
         return builder.build();
     }
 
+    /**
+     * Преобразует {@code null} в пустую строку для protobuf-полей.
+     *
+     * @param value исходное значение
+     * @return пустая строка при {@code null}, иначе исходное значение
+     */
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
     }

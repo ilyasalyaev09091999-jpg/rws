@@ -18,13 +18,17 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
- * Mapper между protobuf-контрактом {@code archive-proto} и REST DTO слоя {@code rws-api}.
+ * Маппер между protobuf-контрактом {@code archive-proto} и REST DTO слоя {@code rws-api}.
  */
 @Component
 public class ArchiveGrpcClientMapper {
 
     /**
-     * Формирует protobuf-запрос импорта файла.
+     * Формирует protobuf-запрос на импорт XLSX.
+     *
+     * @param fileName исходное имя файла (может быть {@code null})
+     * @param content байты файла
+     * @return protobuf-запрос с именем файла и содержимым
      */
     public ArchiveImportXlsxRequest toProtoImportRequest(String fileName, byte[] content) {
         return ArchiveImportXlsxRequest.newBuilder()
@@ -34,7 +38,15 @@ public class ArchiveGrpcClientMapper {
     }
 
     /**
-     * Формирует protobuf-запрос поиска рейсов.
+     * Формирует protobuf-запрос поиска.
+     *
+     * @param departurePoint опциональная точка отправления (город/порт)
+     * @param destinationPoint опциональная точка назначения (город/порт)
+     * @param dateFrom опциональная нижняя граница даты отправления (включительно)
+     * @param dateTo опциональная верхняя граница даты отправления (включительно)
+     * @param page номер страницы (0-based)
+     * @param size размер страницы
+     * @return protobuf-запрос поиска
      */
     public ArchiveSearchRequest toProtoSearchRequest(String departurePoint,
                                                      String destinationPoint,
@@ -54,6 +66,11 @@ public class ArchiveGrpcClientMapper {
 
     /**
      * Формирует protobuf-запрос аналитики.
+     *
+     * @param departurePoint опциональная точка отправления (город/порт)
+     * @param destinationPoint опциональная точка назначения (город/порт)
+     * @param month опциональный месяц (1..12) или {@code null}
+     * @return protobuf-запрос аналитики
      */
     public ArchiveAnalyticsRequest toProtoAnalyticsRequest(String departurePoint,
                                                            String destinationPoint,
@@ -67,6 +84,9 @@ public class ArchiveGrpcClientMapper {
 
     /**
      * Маппинг ответа синхронного импорта в REST DTO.
+     *
+     * @param response protobuf-ответ
+     * @return REST DTO со счетчиками импорта
      */
     public ArchiveImportResult fromProto(ArchiveImportResultResponse response) {
         return new ArchiveImportResult(
@@ -79,7 +99,10 @@ public class ArchiveGrpcClientMapper {
     }
 
     /**
-     * Маппинг статуса async-импорта в REST DTO.
+     * Маппинг статуса асинхронного импорта в REST DTO.
+     *
+     * @param response protobuf-ответ
+     * @return REST DTO со статусом и счетчиками
      */
     public ArchiveImportJobStatus fromProto(ArchiveImportJobStatusResponse response) {
         return new ArchiveImportJobStatus(
@@ -95,7 +118,10 @@ public class ArchiveGrpcClientMapper {
     }
 
     /**
-     * Маппинг protobuf-ответа поиска в REST DTO.
+     * Маппинг результата поиска в REST DTO.
+     *
+     * @param response protobuf-ответ
+     * @return REST DTO с элементами и метаданными пагинации
      */
     public ArchiveTripSearchResponse fromProto(com.archive.grpc.ArchiveTripSearchResponse response) {
         List<ArchiveTripSearchItem> items = response.getItemsList().stream()
@@ -131,7 +157,10 @@ public class ArchiveGrpcClientMapper {
     }
 
     /**
-     * Маппинг protobuf-ответа аналитики в REST DTO.
+     * Маппинг результата аналитики в REST DTO.
+     *
+     * @param response protobuf-ответ
+     * @return список статистических элементов по маршрутам
      */
     public List<ArchiveRouteStatsItem> fromProto(com.archive.grpc.ArchiveRouteStatsResponse response) {
         return response.getItemsList().stream()
@@ -150,14 +179,32 @@ public class ArchiveGrpcClientMapper {
                 .toList();
     }
 
+    /**
+     * Преобразует {@code null} в пустую строку для protobuf-полей.
+     *
+     * @param value исходное значение
+     * @return пустая строка при {@code null}, иначе исходное значение
+     */
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
     }
 
+    /**
+     * Преобразует пустые или пробельные строки в {@code null}.
+     *
+     * @param value исходное значение
+     * @return {@code null}, если строка пустая/пробельная, иначе исходное значение
+     */
     private String emptyToNull(String value) {
         return value == null || value.isBlank() ? null : value;
     }
 
+    /**
+     * Парсит дату формата {@code yyyy-MM-dd} или возвращает {@code null} при ошибке.
+     *
+     * @param value строковая дата из protobuf
+     * @return {@link LocalDate} либо {@code null}, если строка пустая или некорректная
+     */
     private LocalDate parseDateOrNull(String value) {
         String normalized = emptyToNull(value);
         if (normalized == null) {
@@ -170,6 +217,12 @@ public class ArchiveGrpcClientMapper {
         }
     }
 
+    /**
+     * Парсит десятичное число или возвращает {@code null} при ошибке.
+     *
+     * @param value строковое число из protobuf
+     * @return {@link BigDecimal} либо {@code null}, если строка пустая или некорректная
+     */
     private BigDecimal parseDecimalOrNull(String value) {
         String normalized = emptyToNull(value);
         if (normalized == null) {

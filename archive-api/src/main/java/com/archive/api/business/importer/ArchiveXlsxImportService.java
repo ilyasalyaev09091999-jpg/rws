@@ -32,6 +32,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Сервис импорта архивных рейсов из XLSX.
+ *
+ * <p>Выполняет:
+ * <ul>
+ *   <li>поиск и нормализацию заголовков,</li>
+ *   <li>чтение строк и преобразование типов,</li>
+ *   <li>сохранение данных в БД с защитой от дублей.</li>
+ * </ul>
+ * </p>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -62,29 +73,36 @@ public class ArchiveXlsxImportService {
             DateTimeFormatter.ISO_LOCAL_DATE
     );
 
-    private static final String RU_REIS = "\u0440\u0435\u0439\u0441";
-    private static final String RU_BUKSIR = "\u0431\u0443\u043a\u0441\u0438\u0440";
-    private static final String RU_REGION = "\u0440\u0435\u0433\u0438\u043e\u043d";
-    private static final String RU_KOLICHESTVO = "\u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432";
-    private static final String RU_GRUZ = "\u0433\u0440\u0443\u0437";
-    private static final String RU_OSADK = "\u043e\u0441\u0430\u0434\u043a";
-    private static final String RU_KONTRAGENT = "\u043a\u043e\u043d\u0442\u0440\u0430\u0433\u0435\u043d\u0442";
-    private static final String RU_INN = "\u0438\u043d\u043d";
-    private static final String RU_FLAG = "\u0444\u043b\u0430\u0433";
-    private static final String RU_PUNKT = "\u043f\u0443\u043d\u043a\u0442";
-    private static final String RU_GOROD = "\u0433\u043e\u0440\u043e\u0434";
-    private static final String RU_OTKUDA = "\u043e\u0442\u043a\u0443\u0434\u0430";
-    private static final String RU_OTPRAV = "\u043e\u0442\u043f\u0440\u0430\u0432";
-    private static final String RU_OTPR = "\u043e\u0442\u043f\u0440";
-    private static final String RU_KUDA = "\u043a\u0443\u0434\u0430";
-    private static final String RU_PRIB = "\u043f\u0440\u0438\u0431";
-    private static final String RU_NAZNACH = "\u043d\u0430\u0437\u043d\u0430\u0447";
-    private static final String RU_DATA = "\u0434\u0430\u0442\u0430";
-    private static final String RU_TIP = "\u0442\u0438\u043f";
+    private static final String RU_REIS = "рейс";
+    private static final String RU_BUKSIR = "буксир";
+    private static final String RU_REGION = "регион";
+    private static final String RU_KOLICHESTVO = "количество";
+    private static final String RU_GRUZ = "груз";
+    private static final String RU_OSADK = "осадк";
+    private static final String RU_KONTRAGENT = "контрагент";
+    private static final String RU_INN = "инн";
+    private static final String RU_FLAG = "флаг";
+    private static final String RU_PUNKT = "пункт";
+    private static final String RU_GOROD = "город";
+    private static final String RU_OTKUDA = "откуда";
+    private static final String RU_OTPRAV = "отправ";
+    private static final String RU_OTPR = "отпр";
+    private static final String RU_KUDA = "куда";
+    private static final String RU_PRIB = "приб";
+    private static final String RU_NAZNACH = "назнач";
+    private static final String RU_DATA = "дата";
+    private static final String RU_TIP = "тип";
 
     private final ArchiveTripJpaRepository tripRepository;
     private final PlatformTransactionManager transactionManager;
 
+    /**
+     * Импортирует XLSX-файл в таблицу архива.
+     *
+     * @param file XLSX-файл из multipart запроса
+     * @return статистика импорта по файлу
+     * @throws IllegalArgumentException если файл пустой или не читается
+     */
     public ArchiveImportResult importFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
@@ -417,7 +435,7 @@ public class ArchiveXlsxImportService {
         return value == null
                 ? ""
                 : value.toLowerCase(Locale.ROOT)
-                .replace('\u0451', '\u0435')
+                .replace('ё', 'е')
                 .replaceAll("[\\p{Punct}]", " ")
                 .replaceAll("\\s+", " ")
                 .trim();
@@ -443,5 +461,3 @@ public class ArchiveXlsxImportService {
         SKIPPED
     }
 }
-
-

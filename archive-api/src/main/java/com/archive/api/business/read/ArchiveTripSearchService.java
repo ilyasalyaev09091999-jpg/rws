@@ -13,12 +13,26 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Сервис поиска архивных рейсов.
+ */
 @Service
 @RequiredArgsConstructor
 public class ArchiveTripSearchService {
 
     private final ArchiveTripJpaRepository tripRepository;
 
+    /**
+     * Выполняет поиск рейсов по фильтрам с пагинацией.
+     *
+     * @param departurePoint опциональная точка отправления
+     * @param destinationPoint опциональная точка назначения
+     * @param dateFrom опциональная нижняя граница даты отправления (включительно)
+     * @param dateTo опциональная верхняя граница даты отправления (включительно)
+     * @param page номер страницы (0-based)
+     * @param size размер страницы
+     * @return результат поиска с элементами и метаданными пагинации
+     */
     public ArchiveTripSearchResponse search(String departurePoint,
                                             String destinationPoint,
                                             LocalDate dateFrom,
