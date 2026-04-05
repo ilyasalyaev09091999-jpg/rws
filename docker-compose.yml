@@ -25,7 +25,7 @@ services:
       POSTGRES_DB: geography
     volumes:
       - ./infrastructure/databases/geography:/docker-entrypoint-initdb.d:ro
-      - cd24b5a5e36c902ce74decce9776ee144b05b72595d33e217c58a49449a02d1c:/var/lib/postgresql/data
+      - geography-postgres:/var/lib/postgresql/data
     ports:
       - "5434:5432"
     healthcheck:
@@ -43,7 +43,9 @@ services:
       - geography-postgres
 
   geography-importer:
-    build: ./geography-importer
+    build:
+      context: .
+      dockerfile: geography-importer/Dockerfile
     container_name: geography-importer
     ports:
       - "8081:8081"
@@ -64,7 +66,7 @@ services:
       POSTGRES_DB: refdata
     volumes:
       - ./infrastructure/databases/refdata:/docker-entrypoint-initdb.d:ro
-      - d11928472a7d52d2765187b85dac43abe25a6cf8ab94d7b47d148eba5378adc8:/var/lib/postgresql/data
+      - refdata-postgres:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     healthcheck:
@@ -262,9 +264,9 @@ services:
 
 
 volumes:
-  cd24b5a5e36c902ce74decce9776ee144b05b72595d33e217c58a49449a02d1c:
+  geography-postgres:
     external: true
-  d11928472a7d52d2765187b85dac43abe25a6cf8ab94d7b47d148eba5378adc8:
+  refdata-postgres:
     external: true
   archive_postgres_data:
   redis_data:
