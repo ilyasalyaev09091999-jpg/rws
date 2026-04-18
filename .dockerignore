@@ -13,3 +13,20 @@
 
 # Local dev artifacts
 client/node_modules
+
+# Keep packaged application jars available for runtime-only Dockerfiles
+!archive-api/build/
+!archive-api/build/libs/
+!archive-api/build/libs/*.jar
+!refdata-api/build/
+!refdata-api/build/libs/
+!refdata-api/build/libs/*.jar
+!route-api/build/
+!route-api/build/libs/
+!route-api/build/libs/*.jar
+!rws-api/build/
+!rws-api/build/libs/
+!rws-api/build/libs/*.jar
+!geography-importer/build/
+!geography-importer/build/libs/
+!geography-importer/build/libs/*.jar
