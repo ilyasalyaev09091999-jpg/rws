@@ -121,16 +121,19 @@ services:
       SPRING_DATASOURCE_USERNAME: refdata
       SPRING_DATASOURCE_PASSWORD: refdata
       OTEL_SERVICE_NAME: refdata-api
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4318/v1/traces
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
       OTEL_TRACES_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_TIMEOUT: 30000
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
     depends_on:
-      - refdata-postgres
-      - redis
-      - tempo
+      refdata-postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      tempo:
+        condition: service_started
 
   route-api:
     build:
@@ -147,17 +150,21 @@ services:
       SPRING_REDIS_PORT: 6379
       GRPC_REF_DATA_ADDRESS: dns:///refdata-api:8092
       OTEL_SERVICE_NAME: route-api
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4318/v1/traces
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
       OTEL_TRACES_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_TIMEOUT: 30000
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
     depends_on:
-      - geography-postgres
-      - redis
-      - refdata-api
-      - tempo
+      geography-postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      refdata-api:
+        condition: service_started
+      tempo:
+        condition: service_started
 
   rws-api:
     build:
@@ -171,17 +178,21 @@ services:
       GRPC_ROUTE_ADDRESS: dns:///route-api:8090
       GRPC_ARCHIVE_ADDRESS: dns:///archive-api:8094
       OTEL_SERVICE_NAME: rws-api
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4318/v1/traces
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
       OTEL_TRACES_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_TIMEOUT: 30000
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
     depends_on:
-      - route-api
-      - refdata-api
-      - archive-api
-      - tempo
+      route-api:
+        condition: service_started
+      refdata-api:
+        condition: service_started
+      archive-api:
+        condition: service_started
+      tempo:
+        condition: service_started
 
   archive-api:
     build:
@@ -195,16 +206,29 @@ services:
       SPRING_DATASOURCE_USERNAME: archive
       SPRING_DATASOURCE_PASSWORD: archive
       OTEL_SERVICE_NAME: archive-api
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4317
-      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://tempo:4318/v1/traces
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
       OTEL_TRACES_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_TIMEOUT: 30000
       OTEL_METRICS_EXPORTER: none
       OTEL_LOGS_EXPORTER: none
     depends_on:
-      - archive-postgres
-      - redis
-      - tempo
+      archive-postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      tempo:
+        condition: service_started
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: client
+    ports:
+      - "8085:80"
+    depends_on:
+      - rws-api
 
   prometheus:
     image: prom/prometheus:v2.52.0
@@ -260,6 +284,7 @@ services:
     ports:
       - "3200:3200"   # HTTP
       - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
     restart: unless-stopped
 
 
