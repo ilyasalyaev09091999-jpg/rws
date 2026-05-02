@@ -16,5 +16,3 @@ JOIN nodes n2 ON wn2.node_id = n2.id;
 delete from edges where "source" = 8240037553 and target = 1343219449;
 delete from edges where "source" = 1361095192 and target = 1361095193;
 delete from edges where "source" = 8166654480 and target = 8166654479;
-
-REFRESH MATERIALIZED VIEW edges_astar;

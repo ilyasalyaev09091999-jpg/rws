@@ -32,4 +32,14 @@ public class ImportController {
     public void importPbf() throws IOException {
         importPbfManager.execute();
     }
+
+    /**
+     * Пересчитывает только metadata графа для уже загруженных данных geography-postgres.
+     *
+     * @throws IOException если на этапе постобработки графа произошла ошибка ввода-вывода.
+     */
+    @PostMapping("/graph/rebuild")
+    public void rebuildGraphMetadata() throws IOException {
+        importPbfManager.rebuildGraphMetadata();
+    }
 }
