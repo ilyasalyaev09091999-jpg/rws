@@ -11,12 +11,12 @@ body {
 }
 
 #map {
-    flex: 4;
+    flex: 5;
     height: 100vh;
 }
 
 #sidebar {
-    flex: 1;
+    flex: 2;
     min-width: 360px;
     background: #fff;
     border-left: 1px solid #ccc;
