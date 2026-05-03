@@ -1,37 +1,13 @@
 import { API_BASE, apiUrl } from './config.js';
-
-// Инициализация карты
-const map = L.map('map').setView([55.0, 45.0], 5);
-
-// Базовый слой OSM
-const osmBase = L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {
-    maxZoom: 18,
-    attribution: '© OpenStreetMap contributors'
-  }
-).addTo(map);
-
-// Seamark поверх
-const seamarkLayer = L.tileLayer(
-  'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
-  {
-    attribution: 'Map data © OpenSeaMap contributors',
-    opacity: 0.9
-  }
-).addTo(map);
-
-map.attributionControl.setPrefix(false);
+import { drawRoute, invalidateMapSize, map } from './map.js';
 
 // Контейнеры
 let portsData = [];     // сюда запишем полученные порты
 const portMarkers = {};     // чтобы хранить маркеры по id
 let selectedNodes = []; // выбранные узлы (node ids)
-let routeLayer = null;  // слой маршрута (polyline)
 
 
 // Запрос маршрута при нажатии на кнопку "Расчитать маршрут"
-let routeLine = null; // для хранения текущего маршрута
 
 document.getElementById('routeForm').addEventListener('submit', async (e) => {
     e.preventDefault(); // отменяем отправку
@@ -78,9 +54,7 @@ document.getElementById('routeForm').addEventListener('submit', async (e) => {
 
         // Рисуем маршрут на карте
         const latlngs = data.route.map(p => [p.lat, p.lon]);
-        if (routeLine) map.removeLayer(routeLine);
-        routeLine = L.polyline(latlngs, { color: 'blue', weight: 4 }).addTo(map);
-        map.fitBounds(routeLine.getBounds());
+        drawRoute(latlngs);
 
         const locksHtml = data.routeLocks && data.routeLocks.length
             ? `
@@ -571,7 +545,7 @@ window.addEventListener('DOMContentLoaded', () => {
         archivePanel.classList.toggle('active', !showRoute);
 
         // Leaflet recalculates layout after panel switch
-        setTimeout(() => map.invalidateSize(), 0);
+        setTimeout(() => invalidateMapSize(), 0);
     };
 
     tabRoute.addEventListener('click', () => activateTab('route'));
