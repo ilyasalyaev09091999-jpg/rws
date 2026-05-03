@@ -84,6 +84,11 @@ public class ArchiveGrpcClientMapper {
                 .build();
     }
 
+    /**
+     * Формирует protobuf-запрос на получение списка архивных точек для подсказок.
+     *
+     * @return пустой protobuf-запрос, не требующий параметров фильтрации
+     */
     public ArchivePointSuggestionsRequest toProtoPointSuggestionsRequest() {
         return ArchivePointSuggestionsRequest.newBuilder().build();
     }
@@ -185,6 +190,12 @@ public class ArchiveGrpcClientMapper {
                 .toList();
     }
 
+    /**
+     * Маппит protobuf-ответ со списком архивных точек в REST-представление.
+     *
+     * @param response protobuf-ответ со списком точек
+     * @return список непустых городов/точек для автоподсказок
+     */
     public List<String> fromProto(ArchivePointSuggestionsResponse response) {
         return response.getPointsList().stream()
                 .map(this::emptyToNull)

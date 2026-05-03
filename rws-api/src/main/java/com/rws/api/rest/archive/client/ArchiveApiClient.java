@@ -9,6 +9,7 @@ import com.rws.api.rest.archive.dto.ArchiveTripSearchResponse;
 import com.rws.api.rest.archive.mapper.ArchiveGrpcClientMapper;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * gRPC client for archive-api.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ArchiveApiClient {
@@ -112,13 +114,23 @@ public class ArchiveApiClient {
         }
     }
 
+    /**
+     * Запрашивает у {@code archive-api} полный список архивных точек для подсказок в UI.
+     *
+     * @return список городов/точек, по которым доступны архивные рейсы
+     * @throws RuntimeException если gRPC-вызов завершился ошибкой или таймаутом
+     */
     public List<String> getPointSuggestions() {
         var request = archiveGrpcClientMapper.toProtoPointSuggestionsRequest();
+        log.info("Requesting archive point suggestions via gRPC");
 
         try {
             var response = stub.withDeadlineAfter(30, TimeUnit.SECONDS).getPointSuggestions(request);
-            return archiveGrpcClientMapper.fromProto(response);
+            List<String> points = archiveGrpcClientMapper.fromProto(response);
+            log.info("Archive point suggestions received via gRPC. pointsCount={}", points.size());
+            return points;
         } catch (StatusRuntimeException ex) {
+            log.error("Archive point suggestions gRPC call failed. status={}", ex.getStatus(), ex);
             throw mapGrpcError(ex);
         }
     }

@@ -17,11 +17,13 @@ import com.archive.grpc.ArchiveServiceGrpc;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
 /**
  * Реализация gRPC сервиса {@code ArchiveService} на стороне {@code archive-api}.
  */
+@Slf4j
 @GrpcService
 @RequiredArgsConstructor
 public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBase {
@@ -119,12 +121,22 @@ public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBas
         }
     }
 
+    /**
+     * Возвращает список архивных точек отправления и назначения для подсказок в UI.
+     *
+     * @param request protobuf-запрос без параметров
+     * @param responseObserver observer ответа
+     */
     @Override
     public void getPointSuggestions(ArchivePointSuggestionsRequest request, StreamObserver<ArchivePointSuggestionsResponse> responseObserver) {
+        log.info("gRPC archive point suggestions request received");
         try {
-            responseObserver.onNext(pointSuggestionsHandler.handle(request));
+            ArchivePointSuggestionsResponse response = pointSuggestionsHandler.handle(request);
+            log.info("gRPC archive point suggestions response ready. pointsCount={}", response.getPointsCount());
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (Exception ex) {
+            log.error("gRPC archive point suggestions request failed", ex);
             responseObserver.onError(Status.INTERNAL.withDescription("Archive point suggestions failed").asRuntimeException());
         }
     }

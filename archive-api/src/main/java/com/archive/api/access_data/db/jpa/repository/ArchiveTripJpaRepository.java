@@ -51,6 +51,11 @@ public interface ArchiveTripJpaRepository extends JpaRepository<ArchiveTripEntit
             @Param("dateTo") LocalDate dateTo,
             Pageable pageable);
 
+    /**
+     * Возвращает объединенный distinct-список точек отправления и назначения из архива.
+     *
+     * @return отсортированный список непустых городов/точек для подсказок
+     */
     @Query(value = """
             select min(point) as point
             from (

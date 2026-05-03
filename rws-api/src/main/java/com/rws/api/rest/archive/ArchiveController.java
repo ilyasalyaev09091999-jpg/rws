@@ -115,8 +115,18 @@ public class ArchiveController {
         return ResponseEntity.ok(archiveApiClient.analytics(departure, destination, filter.getMonth()));
     }
 
+    /**
+     * Возвращает список точек отправления и назначения, доступных в архиве.
+     *
+     * @return список городов/точек для подсказок в полях фильтрации
+     */
     @GetMapping("/points")
     public ResponseEntity<List<String>> pointSuggestions() {
-        return ResponseEntity.ok(archiveApiClient.getPointSuggestions());
+        log.info("Archive point suggestions request received");
+
+        List<String> points = archiveApiClient.getPointSuggestions();
+        log.info("Archive point suggestions response ready. pointsCount={}", points.size());
+
+        return ResponseEntity.ok(points);
     }
 }
