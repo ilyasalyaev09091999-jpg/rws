@@ -1,10 +1,6 @@
+import { API_BASE, apiUrl } from './config.js';
+
 // Инициализация карты
-const API_BASE = '';
-
-function apiUrl(path) {
-    return `${API_BASE}${path}`;
-}
-
 const map = L.map('map').setView([55.0, 45.0], 5);
 
 // Базовый слой OSM
@@ -335,6 +331,8 @@ function selectPort(id, lat, lon) {
         }
     });
 }
+
+window.selectPort = selectPort;
 
 // Синхронизация при очистке формы
 document.getElementById('startLat').addEventListener('input', () => {
