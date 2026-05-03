@@ -1,7 +1,8 @@
-import { fetchArchiveStats, searchArchiveTrips } from './archive-api.js';
+import { fetchArchivePointSuggestions, fetchArchiveStats, searchArchiveTrips } from './archive-api.js';
 
 let archivePage = 0;
 let archiveTotalPages = 0;
+let archivePointSuggestionsLoaded = false;
 
 // Инициализирует форму архива, кнопки пагинации и начальное состояние таблиц.
 export function initArchivePlanner() {
@@ -9,6 +10,8 @@ export function initArchivePlanner() {
     const archiveClearBtn = document.getElementById('archiveClearBtn');
     const archivePrevBtn = document.getElementById('archivePrevPage');
     const archiveNextBtn = document.getElementById('archiveNextPage');
+    const archiveFromCity = document.getElementById('archiveFromCity');
+    const archiveToCity = document.getElementById('archiveToCity');
 
     if (archiveForm) {
         archiveForm.addEventListener('submit', async (e) => {
@@ -39,7 +42,24 @@ export function initArchivePlanner() {
         });
     }
 
+    [archiveFromCity, archiveToCity].forEach((input) => {
+        if (!input) {
+            return;
+        }
+
+        input.addEventListener('focus', () => {
+            void ensureArchivePointSuggestionsLoaded();
+        });
+        input.addEventListener('click', () => {
+            void ensureArchivePointSuggestionsLoaded();
+        });
+        input.addEventListener('input', () => {
+            void ensureArchivePointSuggestionsLoaded();
+        });
+    });
+
     resetArchive();
+    void ensureArchivePointSuggestionsLoaded();
 }
 
 // Считывает текущие значения фильтров архива из формы.
@@ -161,4 +181,53 @@ function resetArchive() {
     if (pageInfo) pageInfo.textContent = 'Страница 1';
     if (prevBtn) prevBtn.disabled = true;
     if (nextBtn) nextBtn.disabled = true;
+}
+
+// Один раз загружает список архивных точек, чтобы не дергать API на каждый показ подсказок.
+async function ensureArchivePointSuggestionsLoaded() {
+    if (archivePointSuggestionsLoaded) {
+        return;
+    }
+
+    try {
+        const points = await fetchArchivePointSuggestions();
+        renderArchivePointSuggestions(points);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+// Заполняет datalist списком городов из архива, чтобы браузер показывал штатные подсказки при вводе.
+function renderArchivePointSuggestions(points) {
+    const datalist = document.getElementById('archiveCitySuggestions');
+    if (!datalist) {
+        return;
+    }
+
+    datalist.innerHTML = '';
+
+    if (!Array.isArray(points) || !points.length) {
+        archivePointSuggestionsLoaded = true;
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    points.forEach((point) => {
+        if (typeof point !== 'string') {
+            return;
+        }
+
+        const normalizedPoint = point.trim();
+        if (normalizedPoint === '') {
+            return;
+        }
+
+        const option = document.createElement('option');
+        option.value = normalizedPoint;
+        fragment.appendChild(option);
+    });
+
+    datalist.appendChild(fragment);
+    archivePointSuggestionsLoaded = true;
 }
