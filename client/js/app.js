@@ -1,6 +1,7 @@
-import { API_BASE, apiUrl } from './config.js';
-import { drawRoute, invalidateMapSize, map } from './map.js';
+import { API_BASE } from './config.js';
+import { invalidateMapSize, map } from './map.js';
 import { fetchLocks, fetchPorts } from './refdata-api.js';
+import { initRoutePlanner } from './route-planner.js';
 
 // Контейнеры
 let portsData = [];     // сюда запишем полученные порты
@@ -8,79 +9,7 @@ const portMarkers = {};     // чтобы хранить маркеры по id
 let selectedNodes = []; // выбранные узлы (node ids)
 
 
-// Запрос маршрута при нажатии на кнопку "Расчитать маршрут"
-
-document.getElementById('routeForm').addEventListener('submit', async (e) => {
-    e.preventDefault(); // отменяем отправку
-
-    const progressContainer = document.getElementById('progressContainer');
-    const progressBar = document.getElementById('progressBar');
-    const routeResult = document.getElementById('routeResult');
-
-    // Показываем прогресс
-    progressBar.style.width = '0%';
-    progressContainer.style.display = 'block';
-    routeResult.textContent = '';
-
-    // Симуляция прогресса
-    let progress = 0;
-    const interval = setInterval(() => {
-        progress += 5;
-        if (progress > 100) progress = 100;
-        progressBar.style.width = progress + '%';
-        if (progress >= 100) clearInterval(interval);
-    }, 100);
-
-    try {
-        // Берём значения из формы
-        const startLon = parseFloat(document.getElementById('startLon').value);
-        const startLat = parseFloat(document.getElementById('startLat').value);
-        const endLon = parseFloat(document.getElementById('endLon').value);
-        const endLat = parseFloat(document.getElementById('endLat').value);
-        const departureTimeRaw = document.getElementById('departureTime').value;
-        const departureTime = departureTimeRaw + ":00";
-        const speed = document.getElementById('speed').value;
-
-        const params = new URLSearchParams({ startLon, startLat, endLon, endLat, departureTime, speed });
-        const response = await fetch(apiUrl(`/api/route/find?${params.toString()}`));
-        const data = await response.json();
-        if (response.status === 400) {
-            throw new Error(data.message);
-        }
-
-        if (!response.ok) {
-            throw new Error('Ошибка сервера');
-        }
-
-
-        // Рисуем маршрут на карте
-        const latlngs = data.route.map(p => [p.lat, p.lon]);
-        drawRoute(latlngs);
-
-        const locksHtml = data.routeLocks && data.routeLocks.length
-            ? `
-                <p><b>Шлюзы на маршруте:</b></p>
-                <ul>
-                    ${data.routeLocks.map(lock => `<li>${lock.name}</li>`).join('')}
-                </ul>
-              `
-            : `<p><b>Шлюзы на маршруте:</b> отсутствуют</p>`;
-
-        // Отображаем результат
-        routeResult.innerHTML = `
-            <p>Время в пути: ${data.duration}</p>
-            <p>Время прибытия: ${new Date(data.arrivalDateTime).toLocaleString()}</p>
-            <p>Общее расстояние: ${data.totalDistance.toFixed(2)} км</p>
-            ${locksHtml}
-        `;
-    } catch (err) {
-        console.error(err);
-        alert('Не удалось получить маршрут');
-    } finally {
-        // Скрываем progress bar
-        progressContainer.style.display = 'none';
-    }
-});
+initRoutePlanner();
 
 // Функция, вызываемая из popup кнопки
 window.selectPortFromPopup = function(nodeId) {
@@ -168,22 +97,6 @@ document.getElementById('clearPoints').addEventListener('click', () => {
     // Удаляем произвольные точки
     markersLayer.clearLayers();
     markers.length = 0;
-});
-
-
-// Атозаполнение поля "Время отправления"
-window.addEventListener('DOMContentLoaded', () => {
-    const departureInput = document.getElementById('departureTime');
-    const now = new Date();
-
-    // Форматируем в yyyy-MM-ddTHH:mm
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-    const dd = String(now.getDate()).padStart(2, '0');
-    const hh = String(now.getHours()).padStart(2, '0');
-    const min = String(now.getMinutes()).padStart(2, '0');
-
-    departureInput.value = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
 });
 
 
