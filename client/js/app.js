@@ -1,5 +1,6 @@
 import { API_BASE, apiUrl } from './config.js';
 import { drawRoute, invalidateMapSize, map } from './map.js';
+import { fetchLocks, fetchPorts } from './refdata-api.js';
 
 // Контейнеры
 let portsData = [];     // сюда запишем полученные порты
@@ -186,49 +187,40 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Универсальная функция загрузки и отрисовки точек
-async function loadAndDrawPoints({
-    url,
+function drawPoints({
+    items,
     layer,
     style,
     popupBuilder
 }) {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Ошибка запроса: ${url}`);
-        }
-
-        const items = await response.json();
-
-        items.forEach(item => {
-            L.circleMarker([item.latitude, item.longitude], style)
-                .addTo(layer)
-                .bindPopup(popupBuilder(item));
-        });
-
-    } catch (err) {
-        console.error(`Не удалось загрузить данные с ${url}`, err);
-    }
+    items.forEach(item => {
+        L.circleMarker([item.latitude, item.longitude], style)
+            .addTo(layer)
+            .bindPopup(popupBuilder(item));
+    });
 }
 
 // Отрисовка шлюзов
 const markersLayerLock = L.layerGroup().addTo(map);
 
 // Загрузка шлюзов
-loadAndDrawPoints({
-    url: apiUrl('/api/locks/get'),
-    layer: markersLayerLock,
-    style: {
-        radius: 6,
-        color: '#ff8c00',
-        fillColor: '#ff8c00',
-        fillOpacity: 0.9
-    },
-    popupBuilder: (lock) => `
-        <b>${lock.name}</b><br>
-    `
-});
+fetchLocks()
+    .then((locks) => drawPoints({
+        items: locks,
+        layer: markersLayerLock,
+        style: {
+            radius: 6,
+            color: '#ff8c00',
+            fillColor: '#ff8c00',
+            fillOpacity: 0.9
+        },
+        popupBuilder: (lock) => `
+            <b>${lock.name}</b><br>
+        `
+    }))
+    .catch((err) => {
+        console.error('Не удалось загрузить шлюзы', err);
+    });
 
 // Массив выбранных портов
 let selectedPorts = { A: null, B: null };
@@ -237,25 +229,27 @@ let markersLayerPort = L.layerGroup().addTo(map);
 
 // Загрузка портов с сервера
 document.addEventListener('DOMContentLoaded', () => {
-
-    loadAndDrawPoints({
-        url: apiUrl('/api/ports/get'),
-        layer: markersLayerPort,
-        style: {
-            radius: 8,
-            color: '#1e90ff',
-            fillColor: '#1e90ff',
-            fillOpacity: 0.8
-        },
-        popupBuilder: (port) => `
-            <b>${port.name}</b><br>
-            ID: ${port.id}<br>
-            <button onclick="selectPort('${port.id}', ${port.latitude}, ${port.longitude})">
-                Выбрать порт
-            </button>
-        `
-    });
-
+    fetchPorts()
+        .then((ports) => drawPoints({
+            items: ports,
+            layer: markersLayerPort,
+            style: {
+                radius: 8,
+                color: '#1e90ff',
+                fillColor: '#1e90ff',
+                fillOpacity: 0.8
+            },
+            popupBuilder: (port) => `
+                <b>${port.name}</b><br>
+                ID: ${port.id}<br>
+                <button onclick="selectPort('${port.id}', ${port.latitude}, ${port.longitude})">
+                    Выбрать порт
+                </button>
+            `
+        }))
+        .catch((err) => {
+            console.error('Не удалось загрузить порты', err);
+        });
 });
 
 // Функция выбора порта из popup
