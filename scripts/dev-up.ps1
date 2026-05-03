@@ -5,7 +5,6 @@ Set-Location $root
 
 Write-Host "Building Java jars locally..."
 & .\gradlew.bat `
-  :archive-proto:build `
   :archive-api:bootJar `
   :refdata-api:bootJar `
   :route-api:bootJar `
