@@ -4,6 +4,8 @@ import com.archive.grpc.ArchiveAnalyticsRequest;
 import com.archive.grpc.ArchiveImportJobStatusResponse;
 import com.archive.grpc.ArchiveImportResultResponse;
 import com.archive.grpc.ArchiveImportXlsxRequest;
+import com.archive.grpc.ArchivePointSuggestionsRequest;
+import com.archive.grpc.ArchivePointSuggestionsResponse;
 import com.archive.grpc.ArchiveSearchRequest;
 import com.rws.api.rest.archive.dto.ArchiveImportJobStatus;
 import com.rws.api.rest.archive.dto.ArchiveImportResult;
@@ -80,6 +82,10 @@ public class ArchiveGrpcClientMapper {
                 .setDestinationPoint(nullToEmpty(destinationPoint))
                 .setMonth(month == null ? 0 : month)
                 .build();
+    }
+
+    public ArchivePointSuggestionsRequest toProtoPointSuggestionsRequest() {
+        return ArchivePointSuggestionsRequest.newBuilder().build();
     }
 
     /**
@@ -176,6 +182,13 @@ public class ArchiveGrpcClientMapper {
                         parseDecimalOrNull(item.getP80Days()),
                         parseDecimalOrNull(item.getUncertaintyDays())
                 ))
+                .toList();
+    }
+
+    public List<String> fromProto(ArchivePointSuggestionsResponse response) {
+        return response.getPointsList().stream()
+                .map(this::emptyToNull)
+                .filter(value -> value != null)
                 .toList();
     }
 

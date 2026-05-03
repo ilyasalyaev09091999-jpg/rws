@@ -114,4 +114,9 @@ public class ArchiveController {
 
         return ResponseEntity.ok(archiveApiClient.analytics(departure, destination, filter.getMonth()));
     }
+
+    @GetMapping("/points")
+    public ResponseEntity<List<String>> pointSuggestions() {
+        return ResponseEntity.ok(archiveApiClient.getPointSuggestions());
+    }
 }

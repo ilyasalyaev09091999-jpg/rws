@@ -1,6 +1,7 @@
 package com.archive.api.grpc;
 
 import com.archive.api.grpc.handler.ArchiveGrpcImportHandler;
+import com.archive.api.grpc.handler.ArchiveGrpcPointSuggestionsHandler;
 import com.archive.api.grpc.handler.ArchiveGrpcSearchHandler;
 import com.archive.api.grpc.handler.ArchiveGrpcStatsHandler;
 import com.archive.grpc.ArchiveAnalyticsRequest;
@@ -8,6 +9,8 @@ import com.archive.grpc.ArchiveImportJobStatusRequest;
 import com.archive.grpc.ArchiveImportJobStatusResponse;
 import com.archive.grpc.ArchiveImportResultResponse;
 import com.archive.grpc.ArchiveImportXlsxRequest;
+import com.archive.grpc.ArchivePointSuggestionsRequest;
+import com.archive.grpc.ArchivePointSuggestionsResponse;
 import com.archive.grpc.ArchiveRouteStatsResponse;
 import com.archive.grpc.ArchiveSearchRequest;
 import com.archive.grpc.ArchiveServiceGrpc;
@@ -24,6 +27,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBase {
 
     private final ArchiveGrpcImportHandler importHandler;
+    private final ArchiveGrpcPointSuggestionsHandler pointSuggestionsHandler;
     private final ArchiveGrpcSearchHandler searchHandler;
     private final ArchiveGrpcStatsHandler statsHandler;
 
@@ -112,6 +116,16 @@ public class ArchiveGrpcService extends ArchiveServiceGrpc.ArchiveServiceImplBas
             responseObserver.onCompleted();
         } catch (Exception ex) {
             responseObserver.onError(Status.INTERNAL.withDescription("Archive analytics failed").asRuntimeException());
+        }
+    }
+
+    @Override
+    public void getPointSuggestions(ArchivePointSuggestionsRequest request, StreamObserver<ArchivePointSuggestionsResponse> responseObserver) {
+        try {
+            responseObserver.onNext(pointSuggestionsHandler.handle(request));
+            responseObserver.onCompleted();
+        } catch (Exception ex) {
+            responseObserver.onError(Status.INTERNAL.withDescription("Archive point suggestions failed").asRuntimeException());
         }
     }
 }

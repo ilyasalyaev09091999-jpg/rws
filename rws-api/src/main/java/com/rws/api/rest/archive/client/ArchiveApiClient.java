@@ -19,15 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * gRPC-клиент для взаимодействия с {@code archive-api}.
- *
- * <p>Инкапсулирует:
- * <ul>
- *   <li>вызовы gRPC-методов и таймауты,</li>
- *   <li>маппинг protobuf <-> REST DTO через {@link ArchiveGrpcClientMapper},</li>
- *   <li>преобразование gRPC-ошибок в исключения уровня {@code rws-api}.</li>
- * </ul>
- * </p>
+ * gRPC client for archive-api.
  */
 @Component
 @RequiredArgsConstructor
@@ -38,14 +30,6 @@ public class ArchiveApiClient {
 
     private final ArchiveGrpcClientMapper archiveGrpcClientMapper;
 
-    /**
-     * Синхронный импорт XLSX.
-     *
-     * @param file XLSX-файл из multipart запроса
-     * @return статистика импорта по файлу
-     * @throws IllegalArgumentException если файл пустой или не читается
-     * @throws ArchiveApiUnavailableException при транспортных ошибках или таймауте
-     */
     public ArchiveImportResult importXlsx(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
@@ -62,14 +46,6 @@ public class ArchiveApiClient {
         }
     }
 
-    /**
-     * Запускает асинхронный импорт XLSX и возвращает начальный статус задачи.
-     *
-     * @param file XLSX-файл из multipart запроса
-     * @return статус задачи с {@code jobId} и начальными счетчиками
-     * @throws IllegalArgumentException если файл пустой или не читается
-     * @throws ArchiveApiUnavailableException при транспортных ошибках или таймауте
-     */
     public ArchiveImportJobStatus startImportXlsx(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
@@ -86,14 +62,6 @@ public class ArchiveApiClient {
         }
     }
 
-    /**
-     * Возвращает статус асинхронной задачи импорта.
-     *
-     * @param jobId идентификатор задачи импорта
-     * @return актуальный статус задачи со счетчиками и возможным сообщением об ошибке
-     * @throws IllegalArgumentException если {@code jobId} пустой
-     * @throws ArchiveApiUnavailableException при транспортных ошибках или таймауте
-     */
     public ArchiveImportJobStatus getImportJobStatus(String jobId) {
         if (jobId == null || jobId.isBlank()) {
             throw new IllegalArgumentException("jobId is empty");
@@ -108,18 +76,6 @@ public class ArchiveApiClient {
         }
     }
 
-    /**
-     * Поиск архивных рейсов по фильтрам.
-     *
-     * @param departurePoint опциональная точка отправления (город/порт)
-     * @param destinationPoint опциональная точка назначения (город/порт)
-     * @param dateFrom опциональная нижняя граница даты отправления (включительно)
-     * @param dateTo опциональная верхняя граница даты отправления (включительно)
-     * @param page номер страницы (0-based)
-     * @param size размер страницы
-     * @return результат поиска с элементами и метаданными пагинации
-     * @throws ArchiveApiUnavailableException при транспортных ошибках или таймауте
-     */
     public ArchiveTripSearchResponse search(String departurePoint,
                                             String destinationPoint,
                                             LocalDate dateFrom,
@@ -143,15 +99,6 @@ public class ArchiveApiClient {
         }
     }
 
-    /**
-     * Возвращает агрегированную статистику по маршрутам.
-     *
-     * @param departurePoint опциональная точка отправления (город/порт)
-     * @param destinationPoint опциональная точка назначения (город/порт)
-     * @param month опциональный месяц отправления (1..12) или {@code null}
-     * @return список статистических элементов по маршрутам
-     * @throws ArchiveApiUnavailableException при транспортных ошибках или таймауте
-     */
     public List<ArchiveRouteStatsItem> analytics(String departurePoint,
                                                  String destinationPoint,
                                                  Integer month) {
@@ -165,12 +112,17 @@ public class ArchiveApiClient {
         }
     }
 
-    /**
-     * Преобразует gRPC-ошибки в исключения уровня {@code rws-api}.
-     *
-     * @param ex gRPC-исключение от вызова stub
-     * @return runtime-исключение для REST-слоя
-     */
+    public List<String> getPointSuggestions() {
+        var request = archiveGrpcClientMapper.toProtoPointSuggestionsRequest();
+
+        try {
+            var response = stub.withDeadlineAfter(30, TimeUnit.SECONDS).getPointSuggestions(request);
+            return archiveGrpcClientMapper.fromProto(response);
+        } catch (StatusRuntimeException ex) {
+            throw mapGrpcError(ex);
+        }
+    }
+
     private RuntimeException mapGrpcError(StatusRuntimeException ex) {
         return switch (ex.getStatus().getCode()) {
             case INVALID_ARGUMENT, NOT_FOUND -> new IllegalArgumentException(ex.getStatus().getDescription());

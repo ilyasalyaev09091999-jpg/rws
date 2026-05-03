@@ -73,19 +73,21 @@
 
     <section id="archivePanel" class="tab-panel">
         <h2>Архив рейсов</h2>
-        <form id="archiveSearchForm">
+        <form id="archiveSearchForm" autocomplete="off">
             <div class="field-row">
                 <div class="field-block">
                     <label>Город отправления
-                        <input id="archiveFromCity" type="text" placeholder="Например, Нижний Новгород" />
+                        <input id="archiveFromCity" type="text" list="archiveCitySuggestions" placeholder="Например, Нижний Новгород" autocomplete="new-password" spellcheck="false" />
                     </label>
                 </div>
                 <div class="field-block">
                     <label>Город прибытия
-                        <input id="archiveToCity" type="text" placeholder="Например, Казань" />
+                        <input id="archiveToCity" type="text" list="archiveCitySuggestions" placeholder="Например, Казань" autocomplete="new-password" spellcheck="false" />
                     </label>
                 </div>
             </div>
+
+            <datalist id="archiveCitySuggestions"></datalist>
 
             <div class="field-row">
                 <div class="field-block">

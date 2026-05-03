@@ -5,6 +5,8 @@ import com.archive.grpc.ArchiveImportJobStatusRequest;
 import com.archive.grpc.ArchiveImportJobStatusResponse;
 import com.archive.grpc.ArchiveImportResultResponse;
 import com.archive.grpc.ArchiveImportXlsxRequest;
+import com.archive.grpc.ArchivePointSuggestionsRequest;
+import com.archive.grpc.ArchivePointSuggestionsResponse;
 import com.archive.grpc.ArchiveRouteStatsResponse;
 import com.archive.grpc.ArchiveSearchRequest;
 import com.archive.grpc.ArchiveServiceGrpc;
@@ -82,6 +84,10 @@ class ArchiveApiClientContractTest {
         var stats = client.analytics("A", "B", null);
         assertEquals(1, stats.size());
         assertEquals(7L, stats.get(0).tripsCount());
+
+        var points = client.getPointSuggestions();
+        assertEquals(2, points.size());
+        assertEquals("A", points.get(0));
 
         var asyncJob = client.startImportXlsx(new MockMultipartFile("file", "demo.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "x".getBytes()));
         assertEquals("RUNNING", asyncJob.status());
@@ -191,6 +197,15 @@ class ArchiveApiClientContractTest {
                             .setTripsCount(7)
                             .setAvgDays("2.2")
                             .build())
+                    .build());
+            responseObserver.onCompleted();
+        }
+
+        @Override
+        public void getPointSuggestions(ArchivePointSuggestionsRequest request, StreamObserver<ArchivePointSuggestionsResponse> responseObserver) {
+            responseObserver.onNext(ArchivePointSuggestionsResponse.newBuilder()
+                    .addPoints("A")
+                    .addPoints("B")
                     .build());
             responseObserver.onCompleted();
         }

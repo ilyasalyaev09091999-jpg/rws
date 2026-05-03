@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * JPA-репозиторий для чтения/записи записей архива рейсов.
@@ -49,4 +50,19 @@ public interface ArchiveTripJpaRepository extends JpaRepository<ArchiveTripEntit
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo,
             Pageable pageable);
+
+    @Query(value = """
+            select min(point) as point
+            from (
+                select nullif(trim(departure_point), '') as point
+                from archive_trip
+                union all
+                select nullif(trim(destination_point), '') as point
+                from archive_trip
+            ) points
+            where point is not null
+            group by lower(point)
+            order by lower(point), min(point)
+            """, nativeQuery = true)
+    List<String> findDistinctPoints();
 }
