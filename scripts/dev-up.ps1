@@ -11,6 +11,7 @@ Write-Host "Building Java jars locally..."
   :rws-api:bootJar `
   :geography-importer:bootJar `
   -x test `
+  --rerun-tasks `
   --no-daemon
 
 Write-Host "Starting docker compose..."

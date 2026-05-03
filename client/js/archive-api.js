@@ -37,3 +37,14 @@ export async function fetchArchiveStats(filters) {
 
     return response.json();
 }
+
+// Запрашивает полный список городов/точек, доступных в архиве, для подсказок в полях поиска.
+export async function fetchArchivePointSuggestions() {
+    const response = await fetch(apiUrl('/api/archive/points'));
+
+    if (!response.ok) {
+        throw new Error('Archive point suggestions request failed');
+    }
+
+    return response.json();
+}

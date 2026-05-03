@@ -12,6 +12,7 @@ service ArchiveService {
   rpc GetImportJobStatus(ArchiveImportJobStatusRequest) returns (ArchiveImportJobStatusResponse);
   rpc SearchTrips(ArchiveSearchRequest) returns (ArchiveTripSearchResponse);
   rpc GetRouteStats(ArchiveAnalyticsRequest) returns (ArchiveRouteStatsResponse);
+  rpc GetPointSuggestions(ArchivePointSuggestionsRequest) returns (ArchivePointSuggestionsResponse);
 }
 
 message ArchiveImportXlsxRequest {
@@ -101,4 +102,10 @@ message ArchiveRouteStatsItem {
 
 message ArchiveRouteStatsResponse {
   repeated ArchiveRouteStatsItem items = 1;
+}
+
+message ArchivePointSuggestionsRequest {}
+
+message ArchivePointSuggestionsResponse {
+  repeated string points = 1;
 }

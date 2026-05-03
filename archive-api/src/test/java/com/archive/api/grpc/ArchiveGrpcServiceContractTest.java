@@ -1,10 +1,12 @@
 package com.archive.api.grpc;
 
 import com.archive.api.grpc.handler.ArchiveGrpcImportHandler;
+import com.archive.api.grpc.handler.ArchiveGrpcPointSuggestionsHandler;
 import com.archive.api.grpc.handler.ArchiveGrpcSearchHandler;
 import com.archive.api.grpc.handler.ArchiveGrpcStatsHandler;
 import com.archive.grpc.ArchiveAnalyticsRequest;
 import com.archive.grpc.ArchiveImportXlsxRequest;
+import com.archive.grpc.ArchivePointSuggestionsRequest;
 import com.archive.grpc.ArchiveSearchRequest;
 import com.archive.grpc.ArchiveServiceGrpc;
 import io.grpc.ManagedChannel;
@@ -31,6 +33,7 @@ class ArchiveGrpcServiceContractTest {
     private ArchiveServiceGrpc.ArchiveServiceBlockingStub stub;
 
     private ArchiveGrpcImportHandler importHandler;
+    private ArchiveGrpcPointSuggestionsHandler pointSuggestionsHandler;
     private ArchiveGrpcSearchHandler searchHandler;
     private ArchiveGrpcStatsHandler statsHandler;
 
@@ -42,13 +45,14 @@ class ArchiveGrpcServiceContractTest {
     @BeforeEach
     void setUp() throws Exception {
         importHandler = mock(ArchiveGrpcImportHandler.class);
+        pointSuggestionsHandler = mock(ArchiveGrpcPointSuggestionsHandler.class);
         searchHandler = mock(ArchiveGrpcSearchHandler.class);
         statsHandler = mock(ArchiveGrpcStatsHandler.class);
 
         String serverName = InProcessServerBuilder.generateName();
         server = InProcessServerBuilder.forName(serverName)
                 .directExecutor()
-                .addService(new ArchiveGrpcService(importHandler, searchHandler, statsHandler))
+                .addService(new ArchiveGrpcService(importHandler, pointSuggestionsHandler, searchHandler, statsHandler))
                 .build()
                 .start();
 
@@ -113,6 +117,20 @@ class ArchiveGrpcServiceContractTest {
         var response = stub.getRouteStats(ArchiveAnalyticsRequest.newBuilder().build());
         assertEquals(1, response.getItemsCount());
         assertEquals(5, response.getItems(0).getTripsCount());
+    }
+
+    @Test
+    void getPointSuggestionsReturnsData() {
+        when(pointSuggestionsHandler.handle(any())).thenReturn(
+                com.archive.grpc.ArchivePointSuggestionsResponse.newBuilder()
+                        .addPoints("Нижний Новгород")
+                        .addPoints("Казань")
+                        .build()
+        );
+
+        var response = stub.getPointSuggestions(ArchivePointSuggestionsRequest.newBuilder().build());
+        assertEquals(2, response.getPointsCount());
+        assertEquals("Нижний Новгород", response.getPoints(0));
     }
 
     /**
