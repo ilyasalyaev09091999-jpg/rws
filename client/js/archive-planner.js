@@ -3,6 +3,7 @@ import { fetchArchiveStats, searchArchiveTrips } from './archive-api.js';
 let archivePage = 0;
 let archiveTotalPages = 0;
 
+// Инициализирует форму архива, кнопки пагинации и начальное состояние таблиц.
 export function initArchivePlanner() {
     const archiveForm = document.getElementById('archiveSearchForm');
     const archiveClearBtn = document.getElementById('archiveClearBtn');
@@ -41,6 +42,7 @@ export function initArchivePlanner() {
     resetArchive();
 }
 
+// Считывает текущие значения фильтров архива из формы.
 function readArchiveFilters() {
     return {
         departurePoint: document.getElementById('archiveFromCity')?.value || '',
@@ -50,6 +52,7 @@ function readArchiveFilters() {
     };
 }
 
+// Загружает рейсы и статистику архива, затем обновляет таблицы.
 async function loadArchive(page = 0) {
     const summary = document.getElementById('archiveSummary');
     if (summary) {
@@ -73,6 +76,7 @@ async function loadArchive(page = 0) {
     }
 }
 
+// Отрисовывает таблицу найденных рейсов и обновляет состояние пагинации.
 function renderArchiveTrips(data) {
     const tbody = document.getElementById('archiveTripsBody');
     const summary = document.getElementById('archiveSummary');
@@ -110,6 +114,7 @@ function renderArchiveTrips(data) {
     nextBtn.disabled = archivePage >= safeTotalPages - 1;
 }
 
+// Отрисовывает таблицу статистики по архивным рейсам.
 function renderArchiveStats(stats) {
     const tbody = document.getElementById('archiveStatsBody');
     if (!tbody) {
@@ -133,6 +138,7 @@ function renderArchiveStats(stats) {
     `).join('');
 }
 
+// Сбрасывает форму архива, таблицы, счетчики страниц и кнопки пагинации.
 function resetArchive() {
     const form = document.getElementById('archiveSearchForm');
     if (form) {

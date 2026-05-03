@@ -1,6 +1,7 @@
 import { drawRoute } from './map.js';
 import { findRoute } from './route-api.js';
 
+// Инициализирует форму расчета маршрута и значение времени отправления.
 export function initRoutePlanner() {
     initDepartureTime();
 
@@ -12,6 +13,7 @@ export function initRoutePlanner() {
     routeForm.addEventListener('submit', handleRouteSubmit);
 }
 
+// Обрабатывает отправку формы маршрута: запускает прогресс, запрашивает маршрут и обновляет UI.
 async function handleRouteSubmit(e) {
     e.preventDefault();
 
@@ -31,6 +33,7 @@ async function handleRouteSubmit(e) {
     }
 }
 
+// Считывает параметры маршрута из формы.
 function readRouteForm() {
     const departureTimeRaw = document.getElementById('departureTime').value;
 
@@ -44,6 +47,7 @@ function readRouteForm() {
     };
 }
 
+// Показывает progress bar и запускает имитацию прогресса расчета.
 function startProgress() {
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
@@ -65,11 +69,13 @@ function startProgress() {
     };
 }
 
+// Останавливает progress bar и скрывает его контейнер.
 function stopProgress(progress) {
     clearInterval(progress.interval);
     progress.container.style.display = 'none';
 }
 
+// Отрисовывает результат расчета маршрута в боковой панели.
 function renderRouteResult(data) {
     const routeResult = document.getElementById('routeResult');
     const locksHtml = data.routeLocks && data.routeLocks.length
@@ -89,6 +95,7 @@ function renderRouteResult(data) {
     `;
 }
 
+// Заполняет поле времени отправления текущими датой и временем.
 function initDepartureTime() {
     const departureInput = document.getElementById('departureTime');
     if (!departureInput) {

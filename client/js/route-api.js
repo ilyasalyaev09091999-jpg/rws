@@ -1,5 +1,6 @@
 import { apiUrl } from './config.js';
 
+// Запрашивает расчет маршрута по параметрам формы.
 export async function findRoute(routeParams) {
     const params = new URLSearchParams(routeParams);
     const response = await fetch(apiUrl(`/api/route/find?${params.toString()}`));

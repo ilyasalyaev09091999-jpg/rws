@@ -20,6 +20,7 @@ map.attributionControl.setPrefix(false);
 
 let routeLine = null;
 
+// Рисует маршрут на карте, заменяя предыдущую линию маршрута.
 export function drawRoute(latlngs) {
     if (routeLine) {
         map.removeLayer(routeLine);
@@ -29,6 +30,7 @@ export function drawRoute(latlngs) {
     map.fitBounds(routeLine.getBounds());
 }
 
+// Заставляет Leaflet пересчитать размеры карты после изменений layout.
 export function invalidateMapSize() {
     map.invalidateSize();
 }

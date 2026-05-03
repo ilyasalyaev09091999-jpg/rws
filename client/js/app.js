@@ -10,6 +10,7 @@ initRefdataLayers({ onPortSelect: routePoints.selectPort });
 initArchivePlanner();
 initTabs();
 
+// Инициализирует переключение вкладок route/archive и обновляет размер карты после смены панели.
 function initTabs() {
     const tabRoute = document.getElementById('tabRoute');
     const tabArchive = document.getElementById('tabArchive');

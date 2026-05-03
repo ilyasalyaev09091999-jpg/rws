@@ -15,6 +15,7 @@ const PORT_STYLE = {
     fillOpacity: 0.8
 };
 
+// Инициализирует слои шлюзов и портов на карте.
 export function initRefdataLayers({ onPortSelect }) {
     const locksLayer = L.layerGroup().addTo(map);
     const portsLayer = L.layerGroup().addTo(map);
@@ -39,9 +40,10 @@ export function initRefdataLayers({ onPortSelect }) {
         }))
         .catch((err) => {
             console.error('Не удалось загрузить порты', err);
-        });
+    });
 }
 
+// Рисует набор справочных точек на указанном Leaflet-слое.
 function drawPoints({
     items,
     layer,
@@ -55,6 +57,7 @@ function drawPoints({
     });
 }
 
+// Создает содержимое popup для шлюза.
 function buildLockPopup(lock) {
     const popup = document.createElement('div');
     const name = document.createElement('b');
@@ -63,6 +66,7 @@ function buildLockPopup(lock) {
     return popup;
 }
 
+// Создает содержимое popup для порта и связывает кнопку выбора с обработчиком.
 function buildPortPopup(port, onPortSelect) {
     const popup = document.createElement('div');
 

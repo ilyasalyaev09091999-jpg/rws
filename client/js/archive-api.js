@@ -1,5 +1,6 @@
 import { apiUrl } from './config.js';
 
+// Собирает query string из непустых параметров фильтра.
 function buildQuery(baseParams) {
     const params = new URLSearchParams();
     Object.entries(baseParams).forEach(([key, value]) => {
@@ -10,6 +11,7 @@ function buildQuery(baseParams) {
     return params;
 }
 
+// Запрашивает страницу архивных рейсов с учетом фильтров и пагинации.
 export async function searchArchiveTrips(filters, page = 0, size = 20) {
     const params = buildQuery({ ...filters, page, size });
     const response = await fetch(apiUrl(`/api/archive/search?${params.toString()}`));
@@ -21,6 +23,7 @@ export async function searchArchiveTrips(filters, page = 0, size = 20) {
     return response.json();
 }
 
+// Запрашивает агрегированную статистику архивных рейсов по направлению.
 export async function fetchArchiveStats(filters) {
     const params = buildQuery({
         departurePoint: filters.departurePoint,
